@@ -1,0 +1,35 @@
+\documentclass[a4paper]{usiinfbachelorproject}
+
+\captionsetup{labelfont={bf}}
+
+\author{Your Name}
+
+\title{The Title}
+\subtitle{The (optional) subtitle}
+\versiondate{\today}
+
+\begin{committee}
+%With more than 1 advisor an error is raised...: only 1 advisor is allowed!
+\advisor[Universit\`a della Svizzera Italiana, Switzerland]{Prof.}{AdvisorName}{AdvisorSurname}
+%You can comment out  these lines if you don't have any assistant
+\assistant[Universit\`a della Svizzera Italiana, Switzerland]{Title}{AssistantName1}{AssistanSurname1}
+\assistant[Universit\`a della Svizzera Italiana, Switzerland]{Title}{AssistantName2}{AssistanSurname2}
+\end{committee}
+
+\abstract {
+An abstract describing what the prospectus is all about. ``Omit needless words'' \cite{Stru1899a}: It should fit within the page without making the footer of the title page break the page --- otherwise what kind of abstract would it be?
+}
+
+
+\begin{document}
+\maketitle
+
+% Chapters
+\input{Sections/Introduction}
+
+
+%%%%% BIBLIOGRAPHY %%%%%
+\bibliographystyle{abbrv}
+\bibliography{Other/references}
+
+\end{document}
