@@ -121,7 +121,7 @@
 \DTLnewdb{committee}
 }%
 {%
-\DTLsort{type,last,first}{committee}
+\DTLsort{type,last,first,aff}{committee}
 }
 
 \newcounter{advisors}
