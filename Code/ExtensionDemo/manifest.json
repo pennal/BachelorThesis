@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+
+  "name": "LIBRA Parser",
+  "description": "Starter for the parser extension",
+  "version": "1.0",
+
+//  "browser_action": {
+//    "default_icon": "icon.png",
+//    "default_popup": "popup.html"
+//  },
+
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["./node_modules/jquery/dist/jquery.min.js","./built/main.js"]
+    }
+  ]
+//  "permissions": ["activeTab", "tabs"]
+}

@@ -179,3 +179,9 @@ TSWLatexianTemp*
 # KBibTeX
 *~[0-9]*
 **/bachelorproject.pdf
+
+
+**/node_modules/**
+**/built/**
+**/.idea/**
+

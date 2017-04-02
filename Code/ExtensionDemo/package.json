@@ -1,0 +1,11 @@
+{
+  "name": "ThesisDemo",
+  "version": "0.0.1",
+  "description": "Simple parser",
+  "dependencies": {
+    "jquery": "^3.2.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^2.0.41"
+  }
+}
