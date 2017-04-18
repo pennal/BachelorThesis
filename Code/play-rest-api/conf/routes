@@ -1,0 +1,3 @@
+# Map static resources from the /public folder to the /assets URL path
+GET         /libra             controllers.LibraController.helloWorld()
+POST         /libra             controllers.LibraController.processInfoUnits()
