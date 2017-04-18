@@ -1,0 +1,22 @@
+language: scala
+
+before_script: cd Code/play-rest-api/
+
+cache:
+  directories:
+  - $HOME/.m2
+  - $HOME/.ivy2
+
+language: scala
+jdk:
+ - oraclejdk8
+
+scala:
+ - 2.11.8
+
+# services:
+#  - docker
+
+# after_success:
+#  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+#  - sbt docker:publish
