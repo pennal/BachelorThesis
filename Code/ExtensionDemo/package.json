@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Simple parser",
   "dependencies": {
+    "@types/chrome": "0.0.44",
     "jquery": "^3.2.1"
   },
   "devDependencies": {

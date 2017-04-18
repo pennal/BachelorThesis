@@ -7,5 +7,10 @@
     },
     "include": [
         "./src/**/*"
+    ],
+
+    "types": [
+        "chrome",
+        "jquery"
     ]
 }

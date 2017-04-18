@@ -114,12 +114,23 @@ class SODocument extends LibraDocument {
     }
 
     getInformationUnits(): Array<LibraInformationUnit> {
+
+        // Get the question
         let arr = [];
         arr = arr.concat(this.question.getInformationUnits());
 
-        // TODO: Is this async?
+        // Get the comments for the question
+        this.question.getParts().forEach(function(val) {
+            arr = arr.concat(val);
+        });
+
+        // get the answers
         this.answers.forEach(function (value) {
             arr = arr.concat(value.getInformationUnits());
+            // for each question, get its comments
+            value.getParts().forEach(function(comment) {
+                arr = arr.concat(comment);
+            });
         });
 
         return arr;
@@ -158,20 +169,33 @@ class SOQuestion extends SOPart  {
 }
 
 class StackOverflowParser extends AbstractParser {
-
     document: SODocument;
+
     constructor(url: string, rawContent: any) {
         super(url, rawContent);
         this.document = new SODocument();
     }
 
     parse(): void {
-        // Start by parsing the question
-        var questionPartElements = $('.question .postcell .post-text')[0].children;
+
+        var questionBody = $('.question');
+
+        var questionComments = $(questionBody).find('.comment')
+
+        var questionCommentList = [];
+        for (var j = 0; j < questionComments.length; j++) {
+            var commentBody = $(questionComments[j]).find('.comment-body');
+            let infoUnit = this.extractInformationUnitFromDOM($(commentBody));
+            questionCommentList.push(infoUnit);
+        }
+
 
 
         // Create a Question Object
-        let soQuestion = new SOQuestion([]);
+        let soQuestion = new SOQuestion(questionCommentList);
+
+        // Start by parsing the question
+        var questionPartElements = $('.question .postcell .post-text')[0].children;
 
         // Iterate over every paragraph of the question
         for (var i = 0; i < questionPartElements.length; i++) {
@@ -188,7 +212,16 @@ class StackOverflowParser extends AbstractParser {
         // Loop over all answers found
         for (var i = 0; i < answers.length; i++) {
             var answerParts = $(answers[i]).find('.answercell .post-text')[0].children;
-            let answer: SOAnswer = new SOAnswer([]);
+
+            var comments = $(answers[i]).find('.comment');
+            var commentList = [];
+            for (var j = 0; j < comments.length; j++) {
+                var commentBody = $(comments[j]).find('.comment-body');
+                let infoUnit = this.extractInformationUnitFromDOM($(commentBody));
+                commentList.push(infoUnit);
+            }
+
+            let answer: SOAnswer = new SOAnswer(commentList);
 
             for (var j = 0; j < answerParts.length; j++) {
                 let infoUnit = this.extractInformationUnitFromDOM($(answerParts[j]));
@@ -426,11 +459,33 @@ class AndroidGuideParser extends AbstractParser {
 }
 
 // ----------------------------------- MAIN METHOD ----------------------------------------
+
+class ChromeMessage {
+    private type: string;
+    private content: Object;
+
+    constructor(type: string, content: Object) {
+        this.type = type;
+        this.content = content;
+    }
+
+    getData(): Object {
+        return {
+            "type":this.type,
+            "content": this.content
+        };
+    }
+}
+
+
 $(document).ready(function() {
-    var url = window.location.href;
+    let url = window.location.href;
     console.log("Extension is ready; jQuery version: "  + $().jquery + "; URL: " + url);
 
+
     let parser: AbstractParser;
+    let foundParser = true;
+    let content;
     if (url.indexOf("stackoverflow.com") > -1) {
         console.log("Calling StackOverflow Parser");
         parser = new StackOverflowParser(url, document.textContent);
@@ -445,9 +500,52 @@ $(document).ready(function() {
         parser = new AndroidGuideParser(url, document.textContent);
     } else {
         console.error("NO PARSER FOUND");
+        foundParser = false;
     }
-    parser.parse();
 
-    console.log(parser.getContent());
-    console.log(parser.getInformationUnits());
+    if (foundParser) {
+        // Send a message indicating the parser is working on extracting data
+        let mex = new ChromeMessage("started", {"message": "extraction started"});
+        chrome.runtime.sendMessage(mex.getData(), function (response) {
+            console.log("Starting parsing");
+            parser.parse();
+
+            content = parser.getInformationUnits();
+
+            console.log(content);
+
+            // Send the message to the background script containing the parsed info
+            let data = new ChromeMessage("parsed", {"units": parser.getInformationUnits()});
+            chrome.runtime.sendMessage(data.getData(), function (response) {
+                console.log(response);
+            });
+        });
+    } else {
+        // Set the icon to indicate that no parser has been found
+    }
+
+
+
+
+
+    chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+        // Event comes from the BG script
+        if (message.type === "valueChanged") {
+            for (var i = 0; i < message.pageContent.length; i++) {
+                const curr = message.pageContent[i];
+
+                const sliderVal = Number(message.sliderVal);
+                const currentDiv = $('[libra_idx="' + curr.idx + '"]');
+                if (curr.degree > sliderVal) {
+                    currentDiv.hide();
+                } else {
+                    currentDiv.show();
+                }
+            }
+
+        }
+    })
+
+
+
 });
