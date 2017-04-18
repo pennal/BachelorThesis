@@ -1,8 +1,7 @@
 language: scala
 
-before_script: ./pullStormed.sh
-
-
+# Need to change dir since project is inside a subfolder
+before_script: cd Code/play-rest-api
 
 cache:
   directories:
