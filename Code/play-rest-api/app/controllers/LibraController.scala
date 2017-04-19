@@ -31,7 +31,7 @@ class LibraController extends Controller {
       // Extract the units
       val list: List[LibraInformationUnit] = value.get.units
       val resultList = list.map { unit =>
-        var content: String = unit.parsedContent
+        val content: String = unit.parsedContent
 
 
 

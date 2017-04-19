@@ -34,3 +34,11 @@ lazy val docs = (project in file("docs")).enablePlugins(ParadoxPlugin).
   settings(
     paradoxProperties += ("download_url" -> "https://example.lightbend.com/v1/download/play-rest-api")
   )
+// Use the fully qualified name to avoid ambiguous references
+enablePlugins(sbtdocker.DockerPlugin)
+
+dockerfile in docker := new Dockerfile {
+  from("java:8")
+  expose(9000)
+  entryPoint("sbt run")
+}

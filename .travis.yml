@@ -1,6 +1,8 @@
 language: scala
 
-# Need to change dir since project is inside a subfolder
+notifications:
+  email: false
+
 before_script: cd Code/play-rest-api
 
 cache:
@@ -8,16 +10,21 @@ cache:
   - $HOME/.m2
   - $HOME/.ivy2
 
-language: scala
 jdk:
- - oraclejdk8
+  - oraclejdk8
 
 scala:
- - 2.11.8
+  - 2.11.8
 
-# services:
-#  - docker
+services:
+  - docker
 
-# after_success:
-#  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-#  - sbt docker:publish
+after_success:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - sbt docker:publish
+
+env:
+  global:
+    - secure: "QSgVStd3GUVTOstqDL5940T/f/4QwFrGqDEyrDhRFIyoaWChvClMuN7yJcKF3gyWZRbsIu2ZzdLhYbjtOM5xeUiaKg4R86mbE4Sdu+Ise/XT6ywRNM45ck793VblPJaTKdrBNmqdtFlNctPbY79DTpabGBYgpVVNmzpJecyr//SOVzlb4GVYR56uRKKgv8gQ1Yj9Y1D2mtvl9pnxG5+MFETAnOL36UxqLHVmTPwx6LHz7/iPmY2GCnavmxxEsy1PtWvpjQz62XQ+SEzKRzE8l63QWfWXioS4Fa6A9VA2SRgQ0yQ6EBD/V+bjMxUOI3CNl5R8rdvYtVENEuPqdz7l7aDqzK0qKaNFKMPlU2W5DVZNzXyKB1w7dX0aeyOh7sD5iRqKdQU4m5OOgXmMiWgu3htq9NErhkqm+ZKUg7sbRbCC9n4Z5YwatvoBskSP1M/57A9ECmbzrKXJoTGfVLwLKxBtO/f1bO+O5ikTKuKwk3wjuqgLAsqEE00+KVCmh7wxuNFE646H9HoWFL6O0cCiX2kB6tPinKH40imG1XZYTkmH5Kz4GG1zB2Dp7x8oqyii87GmvtxX6N+TXssSVoR1hAWrP5y540YzYqgCcIqoH/iSCJg+FEqH7/x483WdhJG25saLAk1298VNS1FyzT8dTy+A0/pYJne/ScrxmSonNug=" # DOCKER_EMAIL
+    - secure: "J5finiTIoMH2eRwul+347i76uPvuoFjp3BHrQWuj7FDsyOIKz+O53bC+eWhoK3JTwW0ckPUFwF0dE9BqOV/xVWkn7t0FXxUBG30TpAuO3J/DRGRUzgkIfEtSJesP6c8yLYm+mPX3CknWO3FB5h1ynYmCN+B3rDMj4L9gdIgEo9Eedk3g9kvZ97LzXqa3aoP8t6NN5vlTej7RbBB8FZ2P4YG4055Nr+qoe9HHd9Hge5rbBAOxZjC4rnsJci18s5EWfegj15x1Q8eonnNE7vx7KxLdJ6RipIuo+kZ5qaggYfx3SfUBH/457GIZgXDWYclD9+2nbIsZBb0wQ1sLqg9W/EfMLcDhC0hxMoIxl5LkGg4rncQhi1rL4eFuuUYJj83QtpuoP187eVyHacbi6vRncRQTYiXTHFyPfoxQFQo0xUa8/j6ecp0Hf2QJ1xa0gYerHXTIohAXpYkWoJH4qe+rx9dlmJ+rpsTDQ9lp3nYhl63yqlUXMZL+NXROvJJnnjQXG9xf0I5UVGqxDbTY2A/zoEWr8wUHvfWVpUxw9yHxKtt4cgKBK+UOMrxsXPzZmFr0CnxdffhUDTX3AGzPZQLb+Y56M3wBAFk2r6AwyDNNKz8QgLDRb6NfQ1uYmGedR1gzZM6QaKEUSkPE8tL9RouHXC4Fnm8MSv4I0nsaaFWIvjA=" # DOCKER_USERNAME
+    - secure: "U6X6I+MCJ3ciZMDvDX93Jscsjc4pckyHGX129oGAbO7UY+iqtA2nyVoEZRHgtligkzGsQwbGRdhtThouwDslgvVSekybHLAuGg+/TrGOyRrOKkg8B+3+QY+C4YadfaEDklBbGp2mS9iWMlIB0e8PlLetTzAL+xuiRC3vWoPpxyRcqfpyeGbqa7FmtacGsfgFvpzk0ooU2dRA/xRr1OT3/KHQ1p94Z/TWaef16diX2Wz4yGe+a7m1fBmW9GLPBxO5OLgwXULdM2CRTazICiYrNJ0/KD+a9GDaF+zHh8n3Ao85b4VT7sf9fSW8dS4GkY4t6PKEFqmBG/c/+eGEHQAd9tR6JOG3xK9teYFJHSQlxLaxUh3xCCWh4E21Y00dKx3IPNJtcq1eK9955Tr0QQq5i7jwzQAbTQ3Sw/46uHgyyd6egV+yYddVqJf3UEnYxWiPvf7TtvRTeolpEb86V0+yWBURMEOmD3uiWReRQWrhPP4NZtcfJSMNh9HYg/tzOV/oNLWSmnL9oNuZFUvTggYGM0v8RsjLhD+PF7Q8Y781C8qhumK4+7lg3pYafx4KdqGjKabIv3XMKbLo+VetWIt19nwxbJPkNU21MUTJdh0zIi0P+Ukfmdp05xKOvptl3J9u8v2XxIkE5fNbco3QNQ7tibmu3Hq9B6JawPT/SNMrM7U=" # DOCKER_PASSWORD

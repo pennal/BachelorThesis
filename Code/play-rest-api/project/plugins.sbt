@@ -11,3 +11,6 @@ addSbtPlugin("io.gatling" % "gatling-sbt" % "2.2.0")
 // Scala formatting: "sbt scalafmt"
 // https://olafurpg.github.io/scalafmt
 addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "0.3.1")
+
+// Docker plugin
+addSbtPlugin("se.marcuslonnberg" % "sbt-docker" % "1.4.1")
