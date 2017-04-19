@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
   .configs(GatlingTest)
   .settings(inConfig(GatlingTest)(Defaults.testSettings): _*)
   .settings(
-    name := """play-rest-api""",
+    name := """bachelor-thesis""",
     scalaSource in GatlingTest := baseDirectory.value / "/gatling/simulation"
   )
 
@@ -37,8 +37,12 @@ lazy val docs = (project in file("docs")).enablePlugins(ParadoxPlugin).
 // Use the fully qualified name to avoid ambiguous references
 enablePlugins(sbtdocker.DockerPlugin)
 
-dockerfile in docker := new Dockerfile {
-  from("java:8")
-  expose(9000)
-  entryPoint("sbt run")
-}
+//dockerfile in docker := new Dockerfile {
+//  from("java:8")
+//  expose(9000)
+//}
+//imageNames in docker := Seq(
+//  ImageName(s"pennal/bachelor-thesis:latest")
+//)
+
+dockerAutoPackageJavaApplication(exposedPorts = Seq(9000))
