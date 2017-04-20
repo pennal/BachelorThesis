@@ -1,5 +1,8 @@
 import sbt.Keys._
 
+name := "bachelor-thesis"
+organization := "pennal"
+
 lazy val GatlingTest = config("gatling") extend Test
 
 resolvers += "StORMeD Dev-Kit Repository" at "https://stormed.inf.usi.ch/releases/"
@@ -41,6 +44,7 @@ enablePlugins(sbtdocker.DockerPlugin)
 //  from("java:8")
 //  expose(9000)
 //}
+
 //imageNames in docker := Seq(
 //  ImageName(s"pennal/bachelor-thesis:latest")
 //)
