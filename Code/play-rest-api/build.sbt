@@ -5,6 +5,8 @@ organization := "pennal"
 
 lazy val GatlingTest = config("gatling") extend Test
 
+dockerRepository := Some("pennal")
+
 resolvers += "StORMeD Dev-Kit Repository" at "https://stormed.inf.usi.ch/releases/"
 
 // disable using the Scala version in output paths and artifacts
@@ -22,7 +24,7 @@ libraryDependencies += "ch.usi.inf.reveal.parsing" % "stormed-devkit" % "1.9.6"
 
 // The Play project itself
 lazy val root = (project in file("."))
-  .enablePlugins(Common, PlayScala, GatlingPlugin)
+  .enablePlugins(Common,PlayScala,GatlingPlugin,DockerPlugin,JavaAppPackaging)
   .configs(GatlingTest)
   .settings(inConfig(GatlingTest)(Defaults.testSettings): _*)
   .settings(
@@ -38,8 +40,6 @@ lazy val docs = (project in file("docs")).enablePlugins(ParadoxPlugin).
   settings(
     paradoxProperties += ("download_url" -> "https://example.lightbend.com/v1/download/play-rest-api")
   )
-// Use the fully qualified name to avoid ambiguous references
-enablePlugins(DockerPlugin,JavaAppPackaging)
 
 //dockerfile in docker := new Dockerfile {
 //  from("java:8")
