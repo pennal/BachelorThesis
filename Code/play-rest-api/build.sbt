@@ -27,6 +27,7 @@ lazy val root = (project in file("."))
   .settings(inConfig(GatlingTest)(Defaults.testSettings): _*)
   .settings(
     name := """bachelor-thesis""",
+    organization := "pennal",
     scalaSource in GatlingTest := baseDirectory.value / "/gatling/simulation"
   )
 
@@ -38,7 +39,7 @@ lazy val docs = (project in file("docs")).enablePlugins(ParadoxPlugin).
     paradoxProperties += ("download_url" -> "https://example.lightbend.com/v1/download/play-rest-api")
   )
 // Use the fully qualified name to avoid ambiguous references
-enablePlugins(sbtdocker.DockerPlugin)
+enablePlugins(DockerPlugin,JavaAppPackaging)
 
 //dockerfile in docker := new Dockerfile {
 //  from("java:8")
@@ -48,5 +49,3 @@ enablePlugins(sbtdocker.DockerPlugin)
 //imageNames in docker := Seq(
 //  ImageName(s"pennal/bachelor-thesis:latest")
 //)
-
-dockerAutoPackageJavaApplication(exposedPorts = Seq(9000))
