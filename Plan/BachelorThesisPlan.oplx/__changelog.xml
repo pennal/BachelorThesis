@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<changelog xmlns="http://www.omnigroup.com/namespace/OmniPlan/v2">
+  <version>2.1</version>
+  <task-change-set user="Lucas Pennati" date="2017-02-26T16:34:11.937Z" timestamp="2017-02-26T16:34:11.937Z">
+    <change idref="t1" attribute="isGroup" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="t1" attribute="multiResourceWorkType" type="real" from="0" resolved="yes"/>
+    <change idref="t1" attribute="isSplittableTask" type="real" from="1" resolved="yes"/>
+    <change idref="t1" attribute="taskType" type="real" from="0" to="2" resolved="yes"/>
+    <change idref="t1" attribute="title" type="string" from="Task 1" to="Project" resolved="yes"/>
+    <change idref="t1" attribute="resourceAssignmentType" type="real" from="0" resolved="yes"/>
+    <change idref="t1" attribute="staticCost" type="real" from="0" resolved="yes"/>
+    <change idref="t1" attribute="effort" type="real" from="28800" resolved="yes"/>
+    <change idref="t1" attribute="isSplitChunk" type="real" from="0" resolved="yes"/>
+    <change idref="t1" attribute="scheduleType" type="real" from="0" resolved="yes"/>
+    <change idref="t1" attribute="internalAssignments" type="string" from="" resolved="yes"/>
+    <change idref="t1" attribute="isSplitTask" type="real" from="0" resolved="yes"/>
+    <change idref="t1" attribute="internalEffortDone" type="real" from="0" resolved="yes"/>
+    <change idref="t2" to="t1" to-position="0" resolved="yes">
+      <change idref="t2" attribute="isGroup" type="real" from="0" to="1"/>
+      <change idref="t2" attribute="taskType" type="real" from="0" to="2"/>
+      <change idref="t2" attribute="title" type="string" to="Planning"/>
+    </change>
+    <change idref="t3" to="t1" to-position="1" resolved="yes">
+      <change idref="t3" attribute="isGroup" type="real" from="0" to="1"/>
+      <change idref="t3" attribute="taskType" type="real" from="0" to="2"/>
+      <change idref="t3" attribute="title" type="string" to="Research"/>
+    </change>
+    <change idref="t4" to="t1" to-position="2" resolved="yes">
+      <change idref="t4" attribute="title" type="string" to="Write Up"/>
+    </change>
+    <change idref="t9" to="t1" to-position="3" resolved="yes">
+      <change idref="t9" attribute="effort" type="real" from="28800" to="0"/>
+      <change idref="t9" attribute="isSplittableTask" type="real" from="1" to="0"/>
+      <change idref="t9" attribute="percentCompleteForMilestone" type="real" to="0"/>
+      <change idref="t9" attribute="taskType" type="real" from="0" to="1"/>
+      <change idref="t9" attribute="title" type="string" to="Final Submission"/>
+    </change>
+    <change idref="t6" to="t3" to-position="0" resolved="yes">
+      <change idref="t6" attribute="noEarlierThanConstraintDate" type="date" to="2017-02-27T07:00:00.000Z"/>
+      <change idref="t6" attribute="title" type="string" to="Learn Scala"/>
+    </change>
+    <change idref="t7" to="t3" to-position="1" resolved="yes">
+      <change idref="t7" attribute="title" type="string" to="Understand STORMeD"/>
+    </change>
+  </task-change-set>
+  <task-change-set user="Lucas Pennati" date="2017-02-26T16:35:21.052Z" timestamp="2017-02-26T16:35:21.052Z">
+    <change idref="t9" attribute="title" type="string" from="Final Submission" to="M5: Final Submission" resolved="yes"/>
+  </task-change-set>
+  <task-change-set user="Lucas Pennati" date="2017-02-26T16:37:59.705Z" timestamp="2017-02-26T16:37:59.705Z">
+    <change idref="t2" from="t1" from-position="0" resolved="yes">
+      <change idref="t2" attribute="isGroup" type="real" from="0" to="1"/>
+      <change idref="t2" attribute="taskType" type="real" from="0" to="2"/>
+      <change idref="t2" attribute="title" type="string" to="Planning"/>
+    </change>
+    <change idref="t12" to="t1" to-position="0" resolved="yes">
+      <change idref="t12" attribute="effort" type="real" from="28800" to="172800"/>
+      <change idref="t12" attribute="noEarlierThanConstraintDate" type="date" to="2017-02-22T07:00:00.000Z"/>
+      <change idref="t12" attribute="title" type="string" to="Planning"/>
+    </change>
+    <change idref="t14" to="t1" to-position="3" resolved="yes">
+      <change idref="t14" attribute="noEarlierThanConstraintDate" type="date" to="2017-02-25T23:00:00.000Z"/>
+      <change idref="t14" attribute="title" type="string" to=""/>
+    </change>
+    <change idref="t6" attribute="effort" type="real" from="28800" to="172800" resolved="yes"/>
+    <change idref="t6" attribute="noEarlierThanConstraintDate" type="date" from="2017-02-27T07:00:00.000Z" to="2017-02-24T07:00:00.000Z" resolved="yes"/>
+    <change idref="t7" attribute="effort" type="real" from="28800" to="172800" resolved="yes"/>
+    <change idref="t7" attribute="noEarlierThanConstraintDate" type="date" to="2017-02-24T07:00:00.000Z" resolved="yes"/>
+  </task-change-set>
+  <task-change-set user="Lucas Pennati" date="2017-02-27T14:47:34.242Z" timestamp="2017-02-27T14:47:34.242Z">
+    <change idref="t14" from="t1" from-position="3" resolved="yes">
+      <change idref="t14" attribute="noEarlierThanConstraintDate" type="date" to="2017-02-25T23:00:00.000Z"/>
+      <change idref="t14" attribute="title" type="string" to=""/>
+    </change>
+    <change idref="t32" to="t1" to-position="2" resolved="yes">
+      <change idref="t32" attribute="isGroup" type="real" from="0" to="1"/>
+      <change idref="t32" attribute="taskType" type="real" from="0" to="2"/>
+      <change idref="t32" attribute="title" type="string" to="Phase 1"/>
+    </change>
+    <change idref="t33" to="t1" to-position="3" resolved="yes">
+      <change idref="t33" attribute="isGroup" type="real" from="0" to="1"/>
+      <change idref="t33" attribute="noEarlierThanConstraintDate" type="date" to="2017-02-27T07:00:00.000Z"/>
+      <change idref="t33" attribute="taskType" type="real" from="0" to="2"/>
+      <change idref="t33" attribute="title" type="string" to="Phase 2"/>
+    </change>
+    <change idref="t30" to="t1" to-position="5" resolved="yes">
+      <change idref="t30" attribute="isGroup" type="real" from="0" to="1"/>
+      <change idref="t30" attribute="taskType" type="real" from="0" to="2"/>
+      <change idref="t30" attribute="title" type="string" to="Milestones"/>
+    </change>
+    <change idref="t4" attribute="isGroup" type="real" from="0" to="1" resolved="yes"/>
+    <change idref="t4" attribute="multiResourceWorkType" type="real" from="0" resolved="yes"/>
+    <change idref="t4" attribute="isSplittableTask" type="real" from="1" resolved="yes"/>
+    <change idref="t4" attribute="taskType" type="real" from="0" to="2" resolved="yes"/>
+    <change idref="t4" attribute="resourceAssignmentType" type="real" from="0" resolved="yes"/>
+    <change idref="t4" attribute="staticCost" type="real" from="0" resolved="yes"/>
+    <change idref="t4" attribute="effort" type="real" from="28800" resolved="yes"/>
+    <change idref="t4" attribute="isSplitChunk" type="real" from="0" resolved="yes"/>
+    <change idref="t4" attribute="scheduleType" type="real" from="0" resolved="yes"/>
+    <change idref="t4" attribute="internalAssignments" type="string" from="" resolved="yes"/>
+    <change idref="t4" attribute="noEarlierThanConstraintDate" type="date" to="2017-05-01T06:00:00.000Z" resolved="yes"/>
+    <change idref="t4" attribute="isSplitTask" type="real" from="0" resolved="yes"/>
+    <change idref="t4" attribute="internalEffortDone" type="real" from="0" resolved="yes"/>
+    <change idref="t21" to="t4" to-position="0" resolved="yes">
+      <change idref="t21" attribute="effort" type="real" from="28800" to="432000"/>
+      <change idref="t21" attribute="noEarlierThanConstraintDate" type="date" to="2017-02-27T07:00:00.000Z"/>
+      <change idref="t21" attribute="title" type="string" to="First Draft"/>
+    </change>
+    <change idref="t22" to="t4" to-position="1" resolved="yes">
+      <change idref="t22" attribute="effort" type="real" from="28800" to="230400"/>
+      <change idref="t22" attribute="noEarlierThanConstraintDate" type="date" to="2017-05-22T06:00:00.000Z"/>
+      <change idref="t22" attribute="title" type="string" to="Second Draft"/>
+    </change>
+    <change idref="t25" to="t30" to-position="0" resolved="yes">
+      <change idref="t25" attribute="effort" type="real" from="28800" to="0"/>
+      <change idref="t25" attribute="isSplittableTask" type="real" from="1" to="0"/>
+      <change idref="t25" attribute="noEarlierThanConstraintDate" type="date" to="2017-03-06T07:00:00.000Z"/>
+      <change idref="t25" attribute="percentCompleteForMilestone" type="real" to="0"/>
+      <change idref="t25" attribute="taskType" type="real" from="0" to="1"/>
+      <change idref="t25" attribute="title" type="string" to="M1: Research"/>
+    </change>
+    <change idref="t26" to="t30" to-position="1" resolved="yes">
+      <change idref="t26" attribute="effort" type="real" from="28800" to="0"/>
+      <change idref="t26" attribute="isSplittableTask" type="real" from="1" to="0"/>
+      <change idref="t26" attribute="noEarlierThanConstraintDate" type="date" to="2017-04-10T06:00:00.000Z"/>
+      <change idref="t26" attribute="percentCompleteForMilestone" type="real" to="0"/>
+      <change idref="t26" attribute="taskType" type="real" from="0" to="1"/>
+      <change idref="t26" attribute="title" type="string" to="M2: Integration"/>
+    </change>
+    <change idref="t27" to="t30" to-position="2" resolved="yes">
+      <change idref="t27" attribute="effort" type="real" from="28800" to="0"/>
+      <change idref="t27" attribute="isSplittableTask" type="real" from="1" to="0"/>
+      <change idref="t27" attribute="noEarlierThanConstraintDate" type="date" to="2017-05-01T06:00:00.000Z"/>
+      <change idref="t27" attribute="percentCompleteForMilestone" type="real" to="0"/>
+      <change idref="t27" attribute="taskType" type="real" from="0" to="1"/>
+      <change idref="t27" attribute="title" type="string" to="M3: Phase 2"/>
+    </change>
+    <change idref="t28" to="t30" to-position="3" resolved="yes">
+      <change idref="t28" attribute="effort" type="real" from="28800" to="0"/>
+      <change idref="t28" attribute="isSplittableTask" type="real" from="1" to="0"/>
+      <change idref="t28" attribute="noEarlierThanConstraintDate" type="date" to="2017-05-22T06:00:00.000Z"/>
+      <change idref="t28" attribute="percentCompleteForMilestone" type="real" to="0"/>
+      <change idref="t28" attribute="taskType" type="real" from="0" to="1"/>
+      <change idref="t28" attribute="title" type="string" to="M4: First Draft"/>
+    </change>
+    <change idref="t29" to="t30" to-position="4" resolved="yes">
+      <change idref="t29" attribute="effort" type="real" from="28800" to="0"/>
+      <change idref="t29" attribute="isSplittableTask" type="real" from="1" to="0"/>
+      <change idref="t29" attribute="noEarlierThanConstraintDate" type="date" to="2017-06-01T06:00:00.000Z"/>
+      <change idref="t29" attribute="percentCompleteForMilestone" type="real" to="0"/>
+      <change idref="t29" attribute="taskType" type="real" from="0" to="1"/>
+      <change idref="t29" attribute="title" type="string" to="M5: Final Submission"/>
+    </change>
+    <change idref="t15" to="t32" to-position="0" resolved="yes">
+      <change idref="t15" attribute="effort" type="real" from="28800" to="288000"/>
+      <change idref="t15" attribute="noEarlierThanConstraintDate" type="date" to="2017-03-06T07:00:00.000Z"/>
+      <change idref="t15" attribute="title" type="string" to="Create Meta Model"/>
+    </change>
+    <change idref="t17" to="t32" to-position="1" resolved="yes">
+      <change idref="t17" attribute="effort" type="real" from="28800" to="144000"/>
+      <change idref="t17" attribute="noEarlierThanConstraintDate" type="date" to="2017-03-20T07:00:00.000Z"/>
+      <change idref="t17" attribute="noLaterThanConstrainedTaskEnd" type="real" from="1" to="0"/>
+      <change idref="t17" attribute="title" type="string" to="Integrate With LIBRA"/>
+    </change>
+    <change idref="t19" to="t32" to-position="2" resolved="yes">
+      <change idref="t19" attribute="effort" type="real" from="28800" to="288000"/>
+      <change idref="t19" attribute="noEarlierThanConstraintDate" type="date" to="2017-03-27T06:00:00.000Z"/>
+      <change idref="t19" attribute="title" type="string" to="Create summarizer"/>
+    </change>
+    <change idref="t34" to="t33" to-position="0" resolved="yes">
+      <change idref="t34" attribute="effort" type="real" from="28800" to="432000"/>
+      <change idref="t34" attribute="noEarlierThanConstraintDate" type="date" to="2017-04-10T06:00:00.000Z"/>
+      <change idref="t34" attribute="title" type="string" to="Create cross document summarizer"/>
+    </change>
+  </task-change-set>
+  <task-change-set user="Lucas Pennati" date="2017-02-27T14:50:31.473Z" timestamp="2017-02-27T14:50:31.473Z">
+    <change idref="t21" attribute="noEarlierThanConstraintDate" type="date" from="2017-02-27T07:00:00.000Z" to="2017-05-01T06:00:00.000Z" resolved="yes"/>
+    <change idref="t33" attribute="noEarlierThanConstraintDate" type="date" from="2017-02-27T07:00:00.000Z" to="2017-04-10T06:00:00.000Z" resolved="yes"/>
+  </task-change-set>
+  <task-change-set user="Lucas Pennati" date="2017-02-27T15:54:34.061Z" timestamp="2017-02-27T15:54:34.061Z">
+    <change idref="t17" attribute="effort" type="real" from="144000" to="201600" resolved="yes"/>
+    <change idref="t17" attribute="noEarlierThanConstraintDate" type="date" from="2017-03-20T07:00:00.000Z" to="2017-03-16T07:00:00.000Z" resolved="yes"/>
+    <change idref="t32" attribute="title" type="string" from="Phase 1" to="Phase 1: Integration" resolved="yes"/>
+    <change idref="t33" attribute="title" type="string" from="Phase 2" to="Phase 2: Extension" resolved="yes"/>
+  </task-change-set>
+  <metadata-change-set user="Lucas Pennati" date="2017-02-26T16:34:11.936Z" timestamp="2017-02-26T16:34:11.936Z">
+    <change idref="m1" attribute="fixedDate" type="date" from="2007-01-01T20:00:00.000Z" to="2017-02-25T23:00:00.000Z" resolved="yes"/>
+  </metadata-change-set>
+  <metadata-change-set user="Lucas Pennati" date="2017-02-26T16:35:21.051Z" timestamp="2017-02-26T16:35:21.051Z">
+    <change idref="m1" attribute="scheduleGranularity" type="real" from="0" to="2" resolved="yes"/>
+    <change idref="m1" attribute="fixedDate" type="date" from="2017-02-25T23:00:00.000Z" to="2017-02-27T07:00:00.000Z" resolved="yes"/>
+  </metadata-change-set>
+  <metadata-change-set user="Lucas Pennati" date="2017-02-26T16:37:59.705Z" timestamp="2017-02-26T16:37:59.705Z">
+    <change idref="m1" attribute="fixedDate" type="date" from="2017-02-27T07:00:00.000Z" to="2017-02-22T07:00:00.000Z" resolved="yes"/>
+  </metadata-change-set>
+</changelog>
