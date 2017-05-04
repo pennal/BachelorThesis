@@ -6,7 +6,6 @@ import ch.usi.inf.reveal.parsing.artifact.ArtifactSerializer
 import javax.net.ssl._
 import scalaj.http.Http
 import java.security.SecureRandom
-import org.json4s.JsonAST.JObject
 
 
 object StormedService {
