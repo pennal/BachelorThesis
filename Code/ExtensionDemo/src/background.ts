@@ -8,8 +8,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         // Should show a spinner or middle status icon
 
     } else if (request.type === "parsed") {
+        console.log("Finished parsing");
         // console.log("Data Received length: " + request.content.units.length);
-        // console.log(JSON.stringify(request, null, 2));
+        // console.log(JSON.stringify(request.content, null, 2));
 
         // Perform the request to the external service, and change the icon to indicate the summarizer is ready
         successfulParse = true;
@@ -18,13 +19,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
         var req = new XMLHttpRequest();
         req.open('POST', 'http://127.0.0.1:9000/libra', true);
-        req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        req.setRequestHeader("Content-Type", "application/json");
         req.onreadystatechange = function(e) {
             if (req.readyState == 4 && req.status == 200) {
                 // Here it means that everything went well
                 let json = JSON.parse(req.responseText);
                 // TODO: Is this 'tab' safe?
                 content = json.units;
+                console.log("Received Data:");
+                console.log(content);
+
                 chrome.tabs.query({active: true, currentWindow: true}, function (arrayOfTabs) {
                     // since only one tab should be active and in the current window at once
                     // the return variable should only have one entry
@@ -36,9 +40,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                         console.log("Icon was set");
                     });
                 });
+            } else {
+                console.log(req.responseText);
             }
         };
         var payload = JSON.stringify(request.content);
+        console.log("Sending payload!");
+        console.log(payload);
         req.send(payload);
     } else if (request.type === "alert") {
         alert("Hello from the popup")

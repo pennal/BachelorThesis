@@ -41,6 +41,10 @@ class LibraInformationUnit {
     setIndex(index: number) {
         this.idx = index;
     }
+
+    getTags() {
+        return this.tags;
+    }
 }
 
 abstract class AbstractParser {
@@ -76,9 +80,10 @@ abstract class AbstractParser {
         let tags = inputDOM.attr("class");
 
         if (tags !== undefined) {
-            tags.split(" ").forEach(function (value) {
-                unit.addTag(value);
-            })
+            let tagsArray = tags.split(" ");
+            for (let i = 0; i < tagsArray.length; i++) {
+                unit.addTag(tagsArray[i]);
+            }
         } else {
             unit.addTag("plaintext");
         }
@@ -531,11 +536,31 @@ $(document).ready(function() {
     chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         // Event comes from the BG script
         if (message.type === "valueChanged") {
-            for (var i = 0; i < message.pageContent.length; i++) {
-                const curr = message.pageContent[i];
+            console.log(message);
+            let dataArr = message.pageContent;
+
+
+            // Find Min/Max and scale the slider
+
+            // let max = dataArr[0].degree;
+            // let min = dataArr[0].degree;
+            //
+            // for (let i = 0; i < dataArr.length; i++) {
+            //     let curr = dataArr[i].degree;
+            //     if (curr < min) {
+            //         min = curr;
+            //     }
+            //     if (curr > max) {
+            //         max = curr;
+            //     }
+            // }
+            for (var i = 0; i < dataArr.length; i++) {
+                const curr = dataArr[i];
 
                 const sliderVal = Number(message.sliderVal);
                 const currentDiv = $('[libra_idx="' + curr.idx + '"]');
+
+                // console.log(curr.degree);
                 if (curr.degree > sliderVal) {
                     currentDiv.hide();
                 } else {
