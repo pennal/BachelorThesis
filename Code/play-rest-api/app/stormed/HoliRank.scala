@@ -58,15 +58,13 @@ case class HoliRankVertex(override val id: InformationUnit, dampingFactor: Doubl
 
 }
 
-
-
 class HoliRank(similarityThreshold : Double = 0.1, isContinuos: Boolean = false, epsilon:Double = 0.001, dampingFactor: Double = 0.85) {
 
   private def buildGraph(units: Seq[InformationUnit])(implicit parameters: SimilarityParameters) = {
 
     import com.typesafe.config._
     val config = ConfigFactory.load().getConfig("holirank")
-    val system = ActorSystem.apply("SignalConnect-" + System.currentTimeMillis(), config)
+    val system = ActorSystem("SignalCollect", config)
 
     val graphBuilder = new GraphBuilder[Any, Any]()
       .withActorSystem(system)

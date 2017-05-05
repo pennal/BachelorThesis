@@ -10,6 +10,8 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 import stormed.{ErrorResponse, HoliRank, ParsingResponse, StormedService}
 import ch.usi.inf.reveal.parsing.units.InformationUnit
 import ch.usi.inf.reveal.parsing.units.similarity.SimilarityParameters
+import com.typesafe.config.ConfigFactory
+import play.api.Logger
 import play.api.libs.json._
 
 
@@ -27,11 +29,20 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
 
   def helloWorld = Action {
+
+//    println(config)
     Ok(s"Hello World!")
   }
 
 
   def processInfoUnits = Action(parse.json) { implicit request =>
+    // ##### DEBUG #####
+    val config = ConfigFactory.load().getConfig("holirank")
+    val akkaPath = config.getStringList("akka.cluster.seed-nodes")
+    println(akkaPath)
+
+
+    Logger.info(s"Started Req")
     val body = request.body
     val value: JsResult[ExtensionRequest] = Json.fromJson[ExtensionRequest](body)
     // Extract the units
@@ -39,6 +50,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
     // Group (default: 5)
     val groupedUnits = list.grouped(5).toList
     // Execute the operations
+    Logger.info(s"Parallel Started")
     val listOfUnits = groupedUnits.flatMap { currentBatch =>
       // currentBatch is a 5 element list
       currentBatch.filter { unit =>
@@ -80,12 +92,16 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
         (taggedUnit, contentIndex)
       }
     }
+
+    Logger.info(s"Parallel End")
     // Use signal collect to calculate the degree of centrality
     val ranker = new HoliRank()
     // Use only the units for the params
     val rawUnits = listOfUnits.map(_._1)
     implicit val params = new SimilarityParameters(rawUnits)
+    Logger.info(s"Ranking Started")
     val seqOfUnits = ranker.rank(rawUnits)
+    Logger.info(s"Ranking End")
 
     // From both lists, extract ONLY the second element of the tuple
     // i.e. we want the degree, and the index
@@ -97,6 +113,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
     // Once calculated, return the list to the client
     // The client MUST scale on the max value found in the returned list
+    Logger.info(s"Returning")
     val jsonResult = Json.obj("units" -> res)
     Ok(jsonResult)
   }
