@@ -15,7 +15,7 @@ libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.0-M6"
 libraryDependencies +=  "org.scalaj" %% "scalaj-http" % "2.3.0"
 libraryDependencies += "org.json4s" %% "json4s-native" % "3.5.1"
 libraryDependencies += "ch.usi.inf.reveal.parsing" %% "stormed-devkit" % "2.0.0-SNAPSHOT"
-libraryDependencies += "ch.usi.inf.reveal" %% "signal-collect" % "8.0.7-SNAPSHOT"
+libraryDependencies += "ch.usi.inf.reveal" %% "signal-collect" % "8.0.7.1-SNAPSHOT"
 
 credentials += Credentials("Sonatype Nexus Repository Manager", "rio.inf.usi.ch", "anonymous", "anonymous")
 
