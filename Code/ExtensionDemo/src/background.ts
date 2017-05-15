@@ -18,7 +18,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 
         var req = new XMLHttpRequest();
-        req.open('POST', 'http://127.0.0.1:9000/libra', true);
+        req.open('POST', 'http://rio.inf.usi.ch:49000/libra', true);
         req.setRequestHeader("Content-Type", "application/json");
         req.onreadystatechange = function(e) {
             if (req.readyState == 4 && req.status == 200) {
@@ -61,6 +61,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         });
     } else if (request.type === "successfulParse") {
         console.log("Successful: " + successfulParse);
-        sendResponse({successful: successfulParse});
+        // Find Min/Max and scale the slider
+
+        let max = content[0].degree;
+        let min = content[0].degree;
+
+        for (let i = 0; i < content.length; i++) {
+            let curr = content[i].degree;
+            if (curr < min) {
+                min = curr;
+            }
+            if (curr > max) {
+                max = curr;
+            }
+        }
+
+        sendResponse({successful: successfulParse, max: max, min: min});
     }
 });

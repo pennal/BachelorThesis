@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.runtime.sendMessage({type: "successfulParse"}, function (response) {
         if (response.successful) {
             // Inject the slider
-            renderContent('<input id="slider" name="aName" type="range" min="0" max="1" step="0.01" value="1">');
+            renderContent('<input id="slider" name="aName" type="range" min="' + response.min + '" max="' + (response.max + 0.01) + '" step="0.001" value="' + (response.max + 0.01) + '">' +
+                '<br><br<p>' + JSON.stringify(response) + '</p>');
 
             chrome.runtime.getBackgroundPage(function (bg) {
                 bg.console.log("Hello from the popup");

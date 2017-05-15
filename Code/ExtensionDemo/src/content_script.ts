@@ -540,20 +540,7 @@ $(document).ready(function() {
             let dataArr = message.pageContent;
 
 
-            // Find Min/Max and scale the slider
 
-            // let max = dataArr[0].degree;
-            // let min = dataArr[0].degree;
-            //
-            // for (let i = 0; i < dataArr.length; i++) {
-            //     let curr = dataArr[i].degree;
-            //     if (curr < min) {
-            //         min = curr;
-            //     }
-            //     if (curr > max) {
-            //         max = curr;
-            //     }
-            // }
             for (var i = 0; i < dataArr.length; i++) {
                 const curr = dataArr[i];
 
