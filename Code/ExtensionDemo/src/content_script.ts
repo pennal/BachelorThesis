@@ -539,8 +539,6 @@ $(document).ready(function() {
             console.log(message);
             let dataArr = message.pageContent;
 
-
-
             for (var i = 0; i < dataArr.length; i++) {
                 const curr = dataArr[i];
 
@@ -548,10 +546,10 @@ $(document).ready(function() {
                 const currentDiv = $('[libra_idx="' + curr.idx + '"]');
 
                 // console.log(curr.degree);
-                if (curr.degree > sliderVal) {
-                    currentDiv.hide();
-                } else {
+                if (curr.degree >= sliderVal) {
                     currentDiv.show();
+                } else {
+                    currentDiv.hide();
                 }
             }
 

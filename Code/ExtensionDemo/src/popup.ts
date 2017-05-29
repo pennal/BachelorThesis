@@ -6,17 +6,48 @@ function renderContent(newContent) {
 }
 
 
+
+
 document.addEventListener('DOMContentLoaded', function() {
+    // ===== Window has just loaded ===== //
+
+    // Get the button for the save
+    const button = $('#saveButton').click(function() {
+        var currentUrl = $('#serviceURLInput').val();
+        chrome.runtime.sendMessage({type: "urlSave", data: currentUrl}, null);
+    });
+
+    // Retrieve the current url for the service
+    chrome.runtime.sendMessage({type: "urlRetrieve"}, function (response) {
+        console.log(response);
+        $('#serviceURLInput').val(response.url);
+    });
+
+
     // Start by checking if in fact the parsing was successful
     chrome.runtime.sendMessage({type: "successfulParse"}, function (response) {
         if (response.successful) {
-            // Inject the slider
-            renderContent('<input id="slider" name="aName" type="range" min="' + response.min + '" max="' + (response.max + 0.01) + '" step="0.001" value="' + (response.max + 0.01) + '">' +
-                '<br><br<p>' + JSON.stringify(response) + '</p>');
+
+            // Modify the values of the slider, depending on the request
+            let slider = <HTMLInputElement>document.getElementById("mySlider");
+            if (slider != null) {
+                let max = response.max;
+                let min = response.min;
+                // set the values depending on the response
+                slider.min = min;
+                slider.max = max;
+                slider.value = min;
+
+                // set the step to be equally distributed
+                slider.step = ((max - min)/40) + "";
+            }
+
+            // MARK: Debug
+            // $('#responseContainer').html(JSON.stringify(response));
 
             chrome.runtime.getBackgroundPage(function (bg) {
                 bg.console.log("Hello from the popup");
-                let slider = $('input[name=aName]');
+                let slider = $('input[name=mySliderName]');
 
                 slider.on('input change', function() {
                     // Send the message to the background script, with the new value

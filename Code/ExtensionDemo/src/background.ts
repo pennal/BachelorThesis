@@ -18,7 +18,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 
         var req = new XMLHttpRequest();
-        req.open('POST', 'http://rio.inf.usi.ch:49000/libra', true);
+        var retrievedUrl = localStorage.getItem("serviceURL");
+        var serviceURL = retrievedUrl != null ? retrievedUrl : "localhost:9000";
+
+        if (serviceURL.indexOf("http") == -1) {
+            // HTTP IS NOT IN THE URL!
+            serviceURL = "http://" + serviceURL;
+        }
+
+        console.log("Service URL is " + serviceURL);
+
+        req.open('POST', serviceURL + '/libra', true);
         req.setRequestHeader("Content-Type", "application/json");
         req.onreadystatechange = function(e) {
             if (req.readyState == 4 && req.status == 200) {
@@ -77,5 +87,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         }
 
         sendResponse({successful: successfulParse, max: max, min: min});
+    } else if (request.type === "urlRetrieve") {
+        let url = localStorage.getItem('serviceURL');
+        if (url === null) {
+            // Save a starting URL
+            url = "http://localhost:9000";
+            localStorage.setItem('serviceURL', url);
+        }
+        sendResponse({
+            url: url
+        });
+    } else if (request.type === "urlSave") {
+        localStorage.setItem('serviceURL', request.data);
     }
 });
