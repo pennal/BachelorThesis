@@ -11,48 +11,35 @@ class GraphManager {
 
 
   def addNode(userId: String, node: InformationUnit): Unit = {
-    createGraph(userId, Seq(node))
+    val g = getGraph(userId)
+    g.addUnit(node)
   }
 
   def addNodes(userId: String, nodes: Seq[InformationUnit]): Unit = {
-    createGraph(userId, nodes)
+    val g = getGraph(userId)
+    nodes.foreach((node) => {
+      g.addUnit(node)
+    })
+  }
+
+  def removeNodes(userId: String, nodes: Seq[InformationUnit]) = {
+    val g = getGraph(userId)
+    nodes.foreach(node => g.removeUnit(node))
   }
 
 
   // TODO: Wrong return type
   def rank(userId: String): Seq[(InformationUnit, Double)] = {
-    // TODO: Catch the possibility no graph exists yet
-    val graph = graphs(userId)
-    implicit val a = new SimilarityParameters(graph.nodes)
-    graph.rank()(a)
+    val graph = getGraph(userId)
+    graph.rank()
   }
 
-
-  private def createGraph(userId: String, nodes: Seq[InformationUnit]): Unit = {
-    var finalNodes = nodes.toList
-
-    // check if we have a graph, and if so, add the nodes
-    graphs.get(userId) match {
-      case Some(g) =>
-        println("Graph found...deleting it")
-        // Add the current nodes
-        val oldNodes: Seq[InformationUnit] = g.nodes
-        finalNodes = oldNodes.toList ::: finalNodes
-
-        g.shutdown()
-
-        graphs = graphs - userId
-      case None =>
-        println("No graph currently exists!")
+  private def getGraph(userId: String): ContextGraph = {
+    if(!graphs.contains(userId)) {
+      val graph = new ContextGraph(userId)
+      graphs = graphs + (userId -> graph)
     }
-
-    println("Nodes length: " + finalNodes.length)
-
-    // Spawn a new graph
-    implicit val a = new SimilarityParameters(finalNodes)
-    val newGraph: ContextGraph = new ContextGraph(userId, finalNodes)(a)
-
-    graphs = graphs + (userId -> newGraph)
+    graphs(userId)
   }
 
 

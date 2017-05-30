@@ -98,20 +98,15 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
 
     Logger.info(s"Parallel End")
-    // Use signal collect to calculate the degree of centrality
-//    val ranker = new HoliRank()
     // Use only the units for the params
     val rawUnits = listOfUnits.map(_._1)
-//    implicit val params = new SimilarityParameters(rawUnits)
-//    Logger.info(s"Ranking Started")
-//    val seqOfUnits = ranker.rank(rawUnits)
-//    Logger.info(s"Ranking End")
-
+  // Add the nodes
     manager.addNodes("12", rawUnits)
     val seqOfUnits = manager.rank("12")
 
-    print(seqOfUnits.length)
-    print("IN!")
+
+    print(seqOfUnits.size)
+
 
 
     // From both lists, extract ONLY the second element of the tuple
@@ -125,7 +120,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
     // Once calculated, return the list to the client
     // The client MUST scale on the max value found in the returned list
     Logger.info(s"Returning")
-//    val jsonResult = Json.obj("units" -> res)
+//    val jsonResult = Json.obj("units" -> seqOfUnits)
 //    Ok(jsonResult)
 
     Ok(s"Hello World")

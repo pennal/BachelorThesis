@@ -19,60 +19,48 @@ import scala.concurrent.duration.Duration
 /**
   * Created by Lucas on 15.05.17.
   */
-class ContextGraph(similarityThreshold : Double = 0.1, isContinuous: Boolean = false, epsilon:Double = 0.001, dampingFactor: Double = 0.85) {
-  var graph: Graph[Any, Any] = _
-  var system: ActorSystem = _
+//object ContextGraph {
+//
+//  def build(userId: String, units: List[InformationUnit])(implicit parameters: SimilarityParameters) = {
+//    val graph = new ContextGraph(userId)
+////    println("Input units length in constr: " + units.length)
+////    println("Nodes length in constr: " + nodes.length)
+//
+//    // Do the calc
+////    val vertexes = units.map{ iu => new HoliRankVertex(iu, dampingFactor) }
+////    vertexes.foreach{ graph.addVertex }
+////
+////    val edges = vertexes.combinations(2).toList ++ vertexes.map{ x => List(x,x) }
+////    edges.par.foreach{ edge  =>
+////      val v1 = edge(0)
+////      val v2 = edge(1)
+////      println("IN")
+////
+////      buildEdge(v1,v2)
+////    }
+////    val vertexes = units.map{ iu => new HoliRankVertex(iu, dampingFactor) }
+//  }
+//
+//}
+
+class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isContinuous: Boolean = false, epsilon:Double = 0.001, dampingFactor: Double = 0.85) {
+
   val hasInit: Boolean = false
-  var nodes: Seq[InformationUnit] = _
   var conf: ExecutionConfiguration[Any, Any] = ExecutionConfiguration.withSignalThreshold(epsilon).withExecutionMode(ExecutionMode.PureAsynchronous)
 
+  // Start the actor system
+  import com.typesafe.config._
+  val config = ConfigFactory.load().getConfig("holirank")
 
-  def this(userId: String, units: List[InformationUnit])(implicit parameters: SimilarityParameters) = {
-    // Call the default constructor
-    this()
+  val system = ActorSystem("SignalCollect", config)
 
-    // Start the actor system
-    import com.typesafe.config._
-    val config = ConfigFactory.load().getConfig("holirank")
+  val graphBuilder = new GraphBuilder[Any, Any]()
+    .withActorSystem(system)
+    .withActorNamePrefix(userId)
+    .withConsole(true)
+    .withLoggingLevel(Logging.WarningLevel)
+  val graph:Graph[Any, Any] = graphBuilder.build
 
-    system = ActorSystem("SignalCollect", config)
-
-    val graphBuilder = new GraphBuilder[Any, Any]()
-      .withActorSystem(system)
-      .withActorNamePrefix(userId)
-      .withConsole(true)
-      .withLoggingLevel(Logging.WarningLevel)
-    graph = graphBuilder.build
-
-
-
-    // From here, we store the nodes as units
-    nodes = units
-
-    println("Input units length in constr: " + units.length)
-    println("Nodes length in constr: " + nodes.length)
-
-    // Do the calc
-    val vertexes = units.map{ iu => new HoliRankVertex(iu, dampingFactor) }
-    vertexes.foreach{ graph.addVertex }
-
-    val edges = vertexes.combinations(2).toList ++ vertexes.map{ x => List(x,x) }
-    edges.par.foreach{ edge  =>
-      val v1 = edge(0)
-      val v2 = edge(1)
-      println("IN")
-
-      //      val sim = similarity(v1.id, v2.id)
-
-//      val sim = v1.id *~ v2.id
-      val sim = v1.id.*~(v2.id)(parameters)
-      if(sim >= similarityThreshold){
-        val simValue = if(isContinuous) sim else 1.0
-        graph.addEdge(v1.id, new HoliRankEdge(v2.id, simValue))
-        graph.addEdge(v2.id, new HoliRankEdge(v1.id, simValue))
-      }
-    }
-  }
 
   def shutdown(): Unit = {
     graph.shutdown
@@ -80,15 +68,58 @@ class ContextGraph(similarityThreshold : Double = 0.1, isContinuous: Boolean = f
   }
 
   // TODO: HOW?
-  lazy val invertedIndex = {
-    0.01
+  lazy val invertedIndex = ???
+
+
+
+
+
+  private def buildEdge(v1: HoliRankVertex)(v2: HoliRankVertex)(implicit parameters: SimilarityParameters): Unit = {
+
+    val sim = v1.id.*~(v2.id)(parameters)
+    if(sim >= similarityThreshold){
+      val simValue = if(isContinuous) sim else 1.0
+      val v2Tov1 = new HoliRankEdge(v1.id, simValue)
+      val v1Tov2 = new HoliRankEdge(v2.id, simValue)
+      graph.addEdge(v1.id, v1Tov2)
+      graph.addEdge(v2.id, v2Tov1)
+    }
+  }
+
+  def units() = {
+    graph.mapReduce(
+      (v:HoliRankVertex) => Seq(v.id),
+      (u1: Seq[InformationUnit], u2: Seq[InformationUnit]) => u1 ++ u2,
+      Seq())
   }
 
 
+  def addUnit(unit: InformationUnit) = {
+
+    val allUnits = units() :+ unit
+    implicit val parameters = new SimilarityParameters(allUnits)
+
+    val newVertex = new HoliRankVertex(unit, dampingFactor)
+    graph.addVertex(newVertex)
+
+    type EdgeBuilder = HoliRankVertex => Unit
+    val builders: Seq[EdgeBuilder] = graph.mapReduce(
+      (v:HoliRankVertex) => if(v != newVertex) Seq( buildEdge(v)(_) ) else Seq(),
+      (v1: Seq[EdgeBuilder], v2: Seq[EdgeBuilder]) => v1 ++ v2,
+      Seq())
+
+    builders.foreach{ builder => builder(newVertex)}
+  }
+
+
+  def removeUnit(unit: InformationUnit) = {
+    graph.forVertexWithId(unit, (v:HoliRankVertex) => v.removeAllEdges(graph))
+    graph.removeVertex(unit)
+  }
 
 
   // TODO: return type is wrong
-  def rank()(implicit parameters: SimilarityParameters): Seq[(InformationUnit, Double)] = {
+  def rank(): Seq[(InformationUnit, Double)] = {
     graph.execute(conf)
 
     type UnitCentrality = (InformationUnit, Double)
@@ -99,14 +130,10 @@ class ContextGraph(similarityThreshold : Double = 0.1, isContinuous: Boolean = f
 
     val centralitySum = unit2Centrality.map{_._2}.sum
     unit2Centrality
-      .map{ case(unit, centrality) => unit -> {
-
-        println(unit.rawText)
-
-        centrality/centralitySum
-
+      .map{
+        case(unit, centrality) => unit -> {centrality/centralitySum}
+      }.sortBy {
+        case (unit, probability) => -probability
       }
-      }
-      .sortBy { case (unit, probability) => -probability }
-  }
+    }
 }
