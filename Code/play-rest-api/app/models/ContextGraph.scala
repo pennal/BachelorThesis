@@ -117,8 +117,13 @@ class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isCon
     graph.removeVertex(unit)
   }
 
+  /*
+  Get the degree for a specified unit
+   */
+//  def getDegree(userId: String, unit: InformationUnit): InformationUnit = {
+//    graph.forVertexWithId(unit, (v: HoliRankVertex) => )
+//  }
 
-  // TODO: return type is wrong
   def rank(): Seq[(InformationUnit, Double)] = {
     graph.execute(conf)
 

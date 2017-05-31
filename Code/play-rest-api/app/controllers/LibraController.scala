@@ -7,12 +7,14 @@ import ch.usi.inf.reveal.parsing.model.HASTNodeSequence
 import ch.usi.inf.reveal.parsing.model.xml.{XmlNameNode, XmlSingleNode}
 import models._
 import play.api.mvc.{AbstractController, ControllerComponents}
-import stormed.{ErrorResponse, HoliRank, ParsingResponse, StormedService}
+import stormed.{ErrorResponse, ParsingResponse, StormedService}
 import ch.usi.inf.reveal.parsing.units.InformationUnit
-import ch.usi.inf.reveal.parsing.units.similarity.SimilarityParameters
 import com.typesafe.config.ConfigFactory
 import play.api.Logger
 import play.api.libs.json._
+import play.api.libs.typedmap.TypedKey
+
+import scala.util.Random
 
 
 /**
@@ -38,12 +40,29 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
   }
 
 
+  def registerNewUser = Action {
+    val userId = Random.alphanumeric take 32 mkString("")
+    val jsonResult = Json.obj("userId" -> userId)
+    Ok(jsonResult)
+
+  }
+
+
   def processInfoUnits = Action(parse.json) { implicit request =>
     // ##### DEBUG #####
     val config = ConfigFactory.load().getConfig("holirank")
     val akkaPath = config.getStringList("akka.cluster.seed-nodes")
     println(akkaPath)
 
+
+    val userId: String = {
+      request.headers.get("X-Libra-UserId") match {
+        case Some(header) => header
+        case None =>
+          println("NO HEADER FOUND")
+          "AAAAA"
+      }
+    }
 
     Logger.info(s"Started Req")
     val body = request.body
@@ -101,29 +120,28 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
     // Use only the units for the params
     val rawUnits = listOfUnits.map(_._1)
   // Add the nodes
-    manager.addNodes("12", rawUnits)
-    val seqOfUnits = manager.rank("12")
-
-
-    print(seqOfUnits.size)
+    manager.addNodes(userId, rawUnits)
+    val seqOfUnits = manager.rank(userId)
 
 
 
     // From both lists, extract ONLY the second element of the tuple
     // i.e. we want the degree, and the index
-//    val res = (seqOfUnits.map(_._2) zip listOfUnits.map(_._2)).map { el =>
-//      val degree = el._1
-//      val idx = el._2
-//      LibraResponseUnit(idx, degree)
-//    }
+    val res = (seqOfUnits.map(_._2) zip listOfUnits.map(_._2)).map { el =>
+      val degree = el._1
+      val idx = el._2
+      LibraResponseUnit(idx, degree)
+    }
+
+    println(res)
 
     // Once calculated, return the list to the client
     // The client MUST scale on the max value found in the returned list
     Logger.info(s"Returning")
-//    val jsonResult = Json.obj("units" -> seqOfUnits)
-//    Ok(jsonResult)
+    val jsonResult = Json.obj("units" -> res)
+    Ok(jsonResult)
 
-    Ok(s"Hello World")
+//    Ok(s"Hello World")
   }
 
 }
