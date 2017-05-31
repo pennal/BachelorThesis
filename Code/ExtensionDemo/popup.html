@@ -2,14 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hello World</title>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="built/popup.js"></script>
 
+    <style>
+        body, html {
+            width:500px;
+        }
+
+        #content {
+            width: 100%;
+        }
+
+        .left {
+            float: left;
+            width: 20%;
+            height:20px;
+            font-size: 12pt;
+        }
+
+        .right {
+            float: left;
+            width: 75%;
+        }
+
+        #serviceURLInput {
+            width: 100%;
+        }
+
+
+        .full {
+            padding: 20px;
+            width: 100%;
+        }
+
+        .alignRight {
+            float: right;
+            /*text-align: right;*/
+        }
+
+        #mySlider {
+            width: 88%;
+        }
+    </style>
+
 </head>
 <body>
-<div id="content"></div>
+    <div id="content">
+        <div class="left">
+            <a>URL</a>
+        </div>
+        <div class="right">
+            <input type="text" id="serviceURLInput" name="serviceURL" value="localhost:9000">
+            <button class="alignRight" id="saveButton">Save</button>
+        </div>
 
 
+        <br>
+        <div class="full">
+            <input id="mySlider" name="mySliderName" type="range" min="0" max="1" step="0.001" value="0">
+        </div>
+        <p id="responseContainer"></p>
+    </div>
 </body>
 </html>

@@ -65,14 +65,27 @@ abstract class AbstractParser {
 
 
     protected extractInformationUnitFromDOM(inputDOM: JQuery): LibraInformationUnit {
+        function hashString(string) {
+            let hash = 0;
+            if (string.length == 0) return hash;
+            for (let i = 0; i < string.length; i++) {
+                let char = string.charCodeAt(i);
+                hash = ((hash<<5)-hash)+char;
+                hash = hash & hash; // Convert to 32bit integer
+            }
+            return hash;
+        }
         // Add the index
         var currentIDX = this._indexCounter++;
-        inputDOM.attr('LIBRA_IDX', currentIDX);
+
+        const libraIndexHash = hashString(this.url + "_" + currentIDX);
+
+        inputDOM.attr('LIBRA_IDX', libraIndexHash);
         // New unit
         let unit = new LibraInformationUnit();
 
         // Set the index, to track it later
-        unit.setIndex(currentIDX);
+        unit.setIndex(libraIndexHash);
 
         // Set the parsed content by extracting it form the DOM
         unit.setParsedContent(inputDOM.text());
@@ -539,8 +552,6 @@ $(document).ready(function() {
             console.log(message);
             let dataArr = message.pageContent;
 
-
-
             for (var i = 0; i < dataArr.length; i++) {
                 const curr = dataArr[i];
 
@@ -548,10 +559,10 @@ $(document).ready(function() {
                 const currentDiv = $('[libra_idx="' + curr.idx + '"]');
 
                 // console.log(curr.degree);
-                if (curr.degree > sliderVal) {
-                    currentDiv.hide();
-                } else {
+                if (curr.degree >= sliderVal) {
                     currentDiv.show();
+                } else {
+                    currentDiv.hide();
                 }
             }
 
