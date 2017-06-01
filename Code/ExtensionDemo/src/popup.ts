@@ -34,7 +34,8 @@ function saveInGlobalStorage(key, value) {
 
 document.addEventListener('DOMContentLoaded', function() {
     // ===== Window has just loaded ===== //
-    const sliderElement: JQueryUI.Slider = $("#mySlider").slider;
+    const sliderElement: JQueryUI.Slider = $("#mySlider");
+    //noinspection TypeScriptUnresolvedFunction
     sliderElement.slider();
 
     // Get the button for the save
@@ -99,6 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
             let slider = $('input[name=mySliderName]');
 
 
+            //noinspection TypeScriptUnresolvedFunction
             sliderElement.on( "slide", function( event, ui ) {
                 // Send the message to the background script, with the new value
                 let data = {
