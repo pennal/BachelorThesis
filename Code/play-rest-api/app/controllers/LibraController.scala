@@ -12,7 +12,6 @@ import ch.usi.inf.reveal.parsing.units.InformationUnit
 import com.typesafe.config.ConfigFactory
 import play.api.Logger
 import play.api.libs.json._
-import play.api.libs.typedmap.TypedKey
 
 import scala.util.Random
 
@@ -34,8 +33,6 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
 
   def helloWorld = Action {
-
-//    println(config)
     Ok(s"Hello World!")
   }
 
@@ -49,18 +46,15 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
 
   def processInfoUnits = Action(parse.json) { implicit request =>
-    // ##### DEBUG #####
     val config = ConfigFactory.load().getConfig("holirank")
     val akkaPath = config.getStringList("akka.cluster.seed-nodes")
-    println(akkaPath)
-
-
+    // Fetch the user Id from the header
     val userId: String = {
       request.headers.get("X-Libra-UserId") match {
         case Some(header) => header
         case None =>
-          println("NO HEADER FOUND")
-          "AAAAA"
+          Logger.error("NO HEADER FOUND ==> Going to the default one")
+          "default"
       }
     }
 
@@ -79,7 +73,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
         // Filter out elements that have an empty content
         val notEmpty = unit.parsedContent.trim().nonEmpty
         if (!notEmpty) {
-          println("Found empty unit")
+          Logger.info("Found empty unit")
         }
         notEmpty
       }.par.map { unit =>
@@ -91,11 +85,11 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
           // if the service fails, this thing explodes
           case ParsingResponse(result, _, _) => result
           case ErrorResponse(message, _) =>
-            println("============== ERROR ==============")
-            println(unit.parsedContent)
-            println("===================================")
-            println(message)
-            println("===================================")
+            Logger.error("============== ERROR ==============")
+            Logger.error(unit.parsedContent)
+            Logger.error("===================================")
+            Logger.error(message)
+            Logger.error("===================================")
             throw new RuntimeException(message)
         }
         // TODO: Find a way to handle the possible errors (empty content has been taken care of)

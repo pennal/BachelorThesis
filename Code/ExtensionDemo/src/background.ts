@@ -2,11 +2,53 @@ import uninstall = chrome.management.uninstall;
 var successfulParse = false;
 var content;
 
+
+let serviceURL;
+let userId;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Load the defaults
+    serviceURL = localStorage.getItem("serviceURL");
+    if (serviceURL == null) {
+        serviceURL = 'http://localhost:9000';
+        localStorage.setItem('serviceURL', serviceURL);
+    }
+
+    if (serviceURL.indexOf("http") == -1) {
+        // HTTP IS NOT IN THE URL!
+        serviceURL = "http://" + serviceURL;
+    }
+
+
+
+    // No matter what, we check if the user is registered to the service
+    userId = localStorage.getItem("userId");
+    if (userId == null) {
+        console.log("Registering user");
+        jQuery.ajax({
+            url: serviceURL + "/register",
+            type: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).done(function(data, textStatus, jqXHR) {
+            userId = data.userId;
+            localStorage.setItem('userId', userId);
+            console.log("User is registered with id " + userId);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            console.log("FAILED TO RETRIEVE ID FOR THE USER!");
+        });
+    }
+});
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+
+
+
+
     if (request.type === "started") {
         console.log("Started parsing page...");
         // Should show a spinner or middle status icon
-
     } else if (request.type === "parsed") {
         console.log("Finished parsing");
         // console.log("Data Received length: " + request.content.units.length);
@@ -18,18 +60,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 
         var req = new XMLHttpRequest();
-        var retrievedUrl = localStorage.getItem("serviceURL");
-        var serviceURL = retrievedUrl != null ? retrievedUrl : "localhost:9000";
 
-        if (serviceURL.indexOf("http") == -1) {
-            // HTTP IS NOT IN THE URL!
-            serviceURL = "http://" + serviceURL;
-        }
+
+
 
         console.log("Service URL is " + serviceURL);
 
         req.open('POST', serviceURL + '/libra', true);
         req.setRequestHeader("Content-Type", "application/json");
+        req.setRequestHeader("X-Libra-UserId", userId);
         req.onreadystatechange = function(e) {
             if (req.readyState == 4 && req.status == 200) {
                 // Here it means that everything went well
@@ -99,5 +138,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         });
     } else if (request.type === "urlSave") {
         localStorage.setItem('serviceURL', request.data);
+    } else if (request.type === "localStorageFetch") {
+        sendResponse(localStorage.getItem(request.key));
+    } else if (request.type === "localStorageSave") {
+        localStorage.setItem(request.key, request.value);
     }
+});
+
+chrome.tabs.onRemoved.addListener(function(tabId, info) {
+    chrome.tabs.get(tabId, function(tab) {
+        const key = "SliderValue___" + tab.id + "___" + tab.url;
+        localStorage.removeItem(key);
+    });
 });
