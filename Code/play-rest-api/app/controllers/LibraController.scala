@@ -80,7 +80,6 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
         // For each of the elements perform a req
         val sourceInfo = XmlSourceInfo(XmlSingleNode(XmlNameNode(unit.idx.toString),Seq()))
         val rawText = unit.parsedContent
-        val contentIndex = unit.idx
         val serviceResult = StormedService.parse(unit.parsedContent, key) match {
           // if the service fails, this thing explodes
           case ParsingResponse(result, _, _) => result
@@ -103,31 +102,18 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
             InformationUnit.codeTaggedUnit(unit.idx.toString, astNode, rawText, sourceInfo)
           }
         }
-        // Return a tuple, with the correct index. This is done as we are filtering the elements to skip those that
-        // may be empty. In the case we eliminate one, the indexes might be misaligned
-        (taggedUnit, contentIndex)
+        taggedUnit
       }
     }
 
-
     Logger.info(s"Parallel End")
-    // Use only the units for the params
-    val rawUnits = listOfUnits.map(_._1)
-  // Add the nodes
-    manager.addNodes(userId, rawUnits)
+    // Add the nodes
+    manager.addNodes(userId, listOfUnits)
+    Logger.info(s"Starting rank")
     val seqOfUnits = manager.rank(userId)
+    Logger.info(s"Finished rank")
 
-
-
-    // From both lists, extract ONLY the second element of the tuple
-    // i.e. we want the degree, and the index
-    val res = (seqOfUnits.map(_._2) zip listOfUnits.map(_._2)).map { el =>
-      val degree = el._1
-      val idx = el._2
-      LibraResponseUnit(idx, degree)
-    }
-
-    println(res)
+    val res = seqOfUnits.map { case (iu, degree) => LibraResponseUnit(iu.id.toInt, degree) }
 
     // Once calculated, return the list to the client
     // The client MUST scale on the max value found in the returned list
