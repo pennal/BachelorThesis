@@ -19,48 +19,26 @@ import scala.concurrent.duration.Duration
 /**
   * Created by Lucas on 15.05.17.
   */
-//object ContextGraph {
-//
-//  def build(userId: String, units: List[InformationUnit])(implicit parameters: SimilarityParameters) = {
-//    val graph = new ContextGraph(userId)
-////    println("Input units length in constr: " + units.length)
-////    println("Nodes length in constr: " + nodes.length)
-//
-//    // Do the calc
-////    val vertexes = units.map{ iu => new HoliRankVertex(iu, dampingFactor) }
-////    vertexes.foreach{ graph.addVertex }
-////
-////    val edges = vertexes.combinations(2).toList ++ vertexes.map{ x => List(x,x) }
-////    edges.par.foreach{ edge  =>
-////      val v1 = edge(0)
-////      val v2 = edge(1)
-////      println("IN")
-////
-////      buildEdge(v1,v2)
-////    }
-////    val vertexes = units.map{ iu => new HoliRankVertex(iu, dampingFactor) }
-//  }
-//
-//}
+object ContextGraph {
+  lazy val system = {
+    import com.typesafe.config._
+    val config = ConfigFactory.load().getConfig("holirank")
+    ActorSystem("SignalCollect", config)
+  }
+}
 
 class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isContinuous: Boolean = false, epsilon:Double = 0.001, dampingFactor: Double = 0.85) {
-
+  import ContextGraph._
   val hasInit: Boolean = false
   var conf: ExecutionConfiguration[Any, Any] = ExecutionConfiguration.withSignalThreshold(epsilon).withExecutionMode(ExecutionMode.PureAsynchronous)
-
-  // Start the actor system
-  import com.typesafe.config._
-  val config = ConfigFactory.load().getConfig("holirank")
-
-  val system = ActorSystem("SignalCollect", config)
 
   val graphBuilder = new GraphBuilder[Any, Any]()
     .withActorSystem(system)
     .withActorNamePrefix(userId)
     .withConsole(true)
     .withLoggingLevel(Logging.WarningLevel)
-  val graph:Graph[Any, Any] = graphBuilder.build
 
+  val graph:Graph[Any, Any] = graphBuilder.build
 
   def shutdown(): Unit = {
     graph.shutdown
@@ -117,13 +95,6 @@ class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isCon
     graph.removeVertex(unit)
   }
 
-  /*
-  Get the degree for a specified unit
-   */
-//  def getDegree(userId: String, unit: InformationUnit): InformationUnit = {
-//    graph.forVertexWithId(unit, (v: HoliRankVertex) => )
-//  }
-
   def rank(): Seq[(InformationUnit, Double)] = {
     graph.execute(conf)
 
@@ -134,8 +105,7 @@ class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isCon
       Seq[UnitCentrality]())
 
     val centralitySum = unit2Centrality.map{_._2}.sum
-    unit2Centrality
-      .map{
+    unit2Centrality.map{
         case(unit, centrality) => unit -> {centrality/centralitySum}
       }.sortBy {
         case (unit, probability) => -probability
