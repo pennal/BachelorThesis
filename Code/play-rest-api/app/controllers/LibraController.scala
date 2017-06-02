@@ -47,13 +47,12 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
   def processInfoUnits = Action(parse.json) { implicit request =>
     val config = ConfigFactory.load().getConfig("holirank")
-    val akkaPath = config.getStringList("akka.cluster.seed-nodes")
     // Fetch the user Id from the header
     val userId: String = {
       request.headers.get("X-Libra-UserId") match {
         case Some(header) => header
         case None =>
-          Logger.error("NO HEADER FOUND ==> Going to the default one")
+          Logger.warn("NO HEADER FOUND ==> Going to the default one")
           "default"
       }
     }
@@ -63,6 +62,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
     val value: JsResult[ExtensionRequest] = Json.fromJson[ExtensionRequest](body)
     // Extract the units
     val list: List[LibraInformationUnit] = value.get.units
+    val originURL: String = value.get.url
     // Group (default: 5)
     val groupedUnits = list.grouped(5).toList
     // Execute the operations
@@ -108,12 +108,14 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
     Logger.info(s"Parallel End")
     // Add the nodes
-    manager.addNodes(userId, listOfUnits)
+    manager.addNodes(userId, listOfUnits, originURL)
     Logger.info(s"Starting rank")
-    val seqOfUnits = manager.rank(userId)
+    val seqOfUnits: Seq[(InformationUnit, Double, String)] = manager.rank(userId).filter { case (unit, degree, url) => listOfUnits.contains(unit) }
+//    val seqOfUnits: Seq[(InformationUnit, Double, String)] = manager.rank(userId)
+
     Logger.info(s"Finished rank")
 
-    val res = seqOfUnits.map { case (iu, degree) => LibraResponseUnit(iu.id.toInt, degree) }
+    val res = seqOfUnits.map { case (iu, degree, url) => LibraResponseUnit(iu.id.toInt, degree, url) }
 
     // Once calculated, return the list to the client
     // The client MUST scale on the max value found in the returned list

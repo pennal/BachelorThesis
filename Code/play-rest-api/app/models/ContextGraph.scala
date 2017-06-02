@@ -1,7 +1,7 @@
 package models
 
 import com.signalcollect.{ExecutionConfiguration, Graph, GraphBuilder}
-import stormed.{HoliRank, HoliRankEdge, HoliRankVertex}
+import stormed.{HoliRankEdge, HoliRankVertex}
 
 import ch.usi.inf.reveal.parsing.units.InformationUnit
 
@@ -40,6 +40,8 @@ class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isCon
 
   val graph:Graph[Any, Any] = graphBuilder.build
 
+
+
   def shutdown(): Unit = {
     graph.shutdown
     Await.result(system.terminate(), Duration.Inf)
@@ -48,7 +50,9 @@ class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isCon
   // TODO: HOW?
   lazy val invertedIndex = ???
 
-
+  def getDegree(unit: InformationUnit) = {
+    graph.forVertexWithId(unit, (v:HoliRankVertex) => v.state)
+  }
 
 
 
@@ -72,12 +76,12 @@ class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isCon
   }
 
 
-  def addUnit(unit: InformationUnit) = {
+  def addUnit(unit: InformationUnit, originURL: String) = {
 
     val allUnits = units() :+ unit
     implicit val parameters = new SimilarityParameters(allUnits)
 
-    val newVertex = new HoliRankVertex(unit, dampingFactor)
+    val newVertex = new HoliRankVertex(unit, originURL, dampingFactor)
     graph.addVertex(newVertex)
 
     type EdgeBuilder = HoliRankVertex => Unit
@@ -95,20 +99,21 @@ class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isCon
     graph.removeVertex(unit)
   }
 
-  def rank(): Seq[(InformationUnit, Double)] = {
+  def rank(): Seq[(InformationUnit, Double, String)] = {
     graph.execute(conf)
 
-    type UnitCentrality = (InformationUnit, Double)
+    type UnitCentrality = (InformationUnit, Double, String) // IU, degree, url
     val unit2Centrality = graph.mapReduce(
-      (vertex: HoliRankVertex) => Seq(vertex.id -> vertex.state), //Tuple(vertex,centrality)
+//      (vertex: HoliRankVertex) => Seq(vertex.id -> vertex.state), //Tuple(vertex, centrality)
+      (vertex: HoliRankVertex) => Seq((vertex.id, vertex.state, vertex.url)),
       (m1:Seq[UnitCentrality], m2:Seq[UnitCentrality]) => m1 ++ m2,
       Seq[UnitCentrality]())
 
     val centralitySum = unit2Centrality.map{_._2}.sum
     unit2Centrality.map{
-        case(unit, centrality) => unit -> {centrality/centralitySum}
+        case(unit, centrality, url) => (unit, {centrality/centralitySum}, url)
       }.sortBy {
-        case (unit, probability) => -probability
+        case (unit, probability, url) => -probability
       }
     }
 }

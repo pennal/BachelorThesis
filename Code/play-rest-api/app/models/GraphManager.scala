@@ -11,15 +11,14 @@ class GraphManager {
   var graphs: Map[String, ContextGraph] = Map[String, ContextGraph]()
 
 
-  def addNode(userId: String, node: InformationUnit): Unit = {
-    val g = getGraph(userId)
-    g.addUnit(node)
+  def addNode(userId: String, node: InformationUnit, originUrl: String): Unit = {
+    addNodes(userId, Seq(node), originUrl)
   }
 
-  def addNodes(userId: String, nodes: Seq[InformationUnit]): Unit = {
+  def addNodes(userId: String, nodes: Seq[InformationUnit], originURL: String): Unit = {
     val g = getGraph(userId)
     nodes.foreach((node) => {
-      g.addUnit(node)
+      g.addUnit(node, originURL)
     })
   }
 
@@ -30,18 +29,18 @@ class GraphManager {
 
 
   // TODO: Wrong return type
-  def rank(userId: String): Seq[(InformationUnit, Double)] = {
+  def rank(userId: String): Seq[(InformationUnit, Double, String)] = {
     val graph = getGraph(userId)
     graph.rank()
   }
 
   private def getGraph(userId: String): ContextGraph = {
     if(!graphs.contains(userId)) {
-      Logger.info(s"Creating new graph for user " + userId)
+      Logger.info(s"Creating new graph for user $userId")
       val graph = new ContextGraph(userId)
       graphs = graphs + (userId -> graph)
     } else {
-      Logger.info(s"Fetching graph for user " + userId)
+      Logger.info(s"Fetching graph for user $userId")
     }
     graphs(userId)
   }
