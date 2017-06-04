@@ -437,6 +437,7 @@ class AndroidGuideDocument extends LibraDocument {
     getInformationUnits(): Array<LibraInformationUnit> {
         let arr = [];
         this.parts.forEach(function(value) {
+            console.log("Parsing!");
             arr = arr.concat(value.getInformationUnits());
         });
         return arr;
@@ -504,7 +505,7 @@ $(document).ready(function() {
     let parser: AbstractParser;
     let foundParser = true;
     let content;
-    if (url.indexOf("stackoverflow.com") > -1) {
+    if (url.indexOf("stackoverflow.com/questions") > -1) {
         console.log("Calling StackOverflow Parser");
         parser = new StackOverflowParser(url, document.textContent);
     } else if (url.indexOf("dzone.com/tutorials/java") > -1) {
@@ -533,7 +534,7 @@ $(document).ready(function() {
             console.log(content);
 
             // Send the message to the background script containing the parsed info
-            let data = new ChromeMessage("parsed", {"units": parser.getInformationUnits()});
+            let data = new ChromeMessage("parsed", {"units": parser.getInformationUnits(), "url": url});
             chrome.runtime.sendMessage(data.getData(), function (response) {
                 console.log(response);
             });
@@ -549,16 +550,18 @@ $(document).ready(function() {
     chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         // Event comes from the BG script
         if (message.type === "valueChanged") {
-            console.log(message);
+            // console.log(message);
             let dataArr = message.pageContent;
 
-            for (var i = 0; i < dataArr.length; i++) {
+            for (let i = 0; i < dataArr.length; i++) {
                 const curr = dataArr[i];
+
+                // console.log(curr)
 
                 const sliderVal = Number(message.sliderVal);
                 const currentDiv = $('[libra_idx="' + curr.idx + '"]');
 
-                // console.log(curr.degree);
+                // console.log("Degree: " + curr.degree);
                 if (curr.degree >= sliderVal) {
                     currentDiv.show();
                 } else {

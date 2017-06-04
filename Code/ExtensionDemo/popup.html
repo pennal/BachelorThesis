@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="node_modules/jquery-ui-dist/jquery-ui.js"></script>
-    <link rel="stylesheet" href="node_modules/jquery-ui-dist/jquery-ui.css">
     <script src="built/popup.js"></script>
 
     <style>
@@ -62,9 +60,10 @@
 
         <br>
         <div class="full">
-            <div id="mySlider" name="mySliderName"></div>
+            <input id="mySlider" name="mySliderName" type="range" min="0" max="1" step="0.001" value="0">
         </div>
         <p id="responseContainer"></p>
+        <button id="summaryButton">Summary</button>
     </div>
 </body>
 </html>

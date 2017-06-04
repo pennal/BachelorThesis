@@ -1,4 +1,4 @@
-import uninstall = chrome.management.uninstall;
+
 var successfulParse = false;
 var content;
 
@@ -138,6 +138,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         });
     } else if (request.type === "urlSave") {
         localStorage.setItem('serviceURL', request.data);
+        serviceURL = request.data;
     } else if (request.type === "localStorageFetch") {
         sendResponse(localStorage.getItem(request.key));
     } else if (request.type === "localStorageSave") {

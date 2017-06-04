@@ -17,6 +17,7 @@ function saveSliderValues(data) {
             step: data.step,
             value: data.value
         });
+
         saveInGlobalStorage(key, value);
     });
 }
@@ -34,12 +35,10 @@ function saveInGlobalStorage(key, value) {
 
 document.addEventListener('DOMContentLoaded', function() {
     // ===== Window has just loaded ===== //
-    const sliderElement: JQueryUI.Slider = $("#mySlider");
-    //noinspection TypeScriptUnresolvedFunction
-    sliderElement.slider();
+    const sliderElement = <HTMLInputElement>document.getElementById("mySlider");
 
     // Get the button for the save
-    const button = $('#saveButton').click(function() {
+    $('#saveButton').click(function() {
         var currentUrl = $('#serviceURLInput').val();
         chrome.runtime.sendMessage({type: "urlSave", data: currentUrl}, null);
     });
@@ -48,6 +47,12 @@ document.addEventListener('DOMContentLoaded', function() {
     chrome.runtime.sendMessage({type: "urlRetrieve"}, function (response) {
         console.log(response);
         $('#serviceURLInput').val(response.url);
+    });
+
+    // Generate summary button
+    $('#summaryButton').click(function() {
+        var newURL = "summary.html";
+        chrome.tabs.create({ url: newURL });
     });
 
 
@@ -63,14 +68,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (value != null) {
                 console.log("Calling LocalStorage");
                 const sliderValues = JSON.parse(value);
-                console.log(sliderElement)
+                console.log(sliderElement);
                 console.log("Setting the values from storage");
                 // set the values depending on the response
                 console.log(sliderValues);
-                $( "#mySlider" ).slider( "option", "min", sliderValues.min );
-                $( "#mySlider" ).slider( "option", "max", sliderValues.max );
-                $( "#mySlider" ).slider( "option", "value", sliderValues.value);
-                $( "#mySlider" ).slider( "option", "step", sliderValues.step );
+
+                sliderElement.min = sliderValues.min;
+                sliderElement.max = sliderValues.max;
+                sliderElement.value = sliderValues.value;
+                sliderElement.step = sliderValues.step;
             }
             else {
                 console.log("Calling Service");
@@ -82,11 +88,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (sliderElement != null) {
                             let max = response.max;
                             let min = response.min;
-                            $( "#mySlider" ).slider( "option", "min", min );
-                            $( "#mySlider" ).slider( "option", "max", max );
-                            $( "#mySlider" ).slider( "option", "value", value);
-                            $( "#mySlider" ).slider( "option", "step", ((max - min)/40) + "" );
-
+                            sliderElement.min = min;
+                            sliderElement.max = max;
+                            sliderElement.value = min;
+                            sliderElement.step = ((max - min)/40) + "";
                             console.log("Setting the values from the request");
                         }
                     } else {
@@ -101,21 +106,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
             //noinspection TypeScriptUnresolvedFunction
-            sliderElement.on( "slide", function( event, ui ) {
+            slider.on('input change', function() {
                 // Send the message to the background script, with the new value
                 let data = {
                     type: "valueChanged",
-                    content: ui.value
+                    content: slider.val()
                 };
 
                 // Ignore the result
                 chrome.runtime.sendMessage(data, null);
                 console.log("Value changed inside popup");
                 saveSliderValues({
-                    min: $( "#mySlider" ).slider( "option", "min" ),
-                    max: $( "#mySlider" ).slider( "option", "max" ),
-                    step: $( "#mySlider" ).slider( "option", "step" ),
-                    value: $( "#mySlider" ).slider( "option", "value" )
+                    min: sliderElement.min,
+                    max: sliderElement.max,
+                    step: sliderElement.step,
+                    value: slider.val()
                 });
 
             } );

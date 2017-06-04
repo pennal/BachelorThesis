@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dummy File</title>
+    <script src="node_modules/handlebars/dist/handlebars.js"></script>
+    <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="built/summary.js"></script>
+</head>
+<body>
+<!-- This is the template for the entries-->
+<script id="website-template" type="text/x-handlebars-template">
+    {{#each sites}}
+        <h1>{{this.pageUrl}}</h1>
+        {{#each this.units}}
+            {{#if_eq this.contentType "code"}}
+                <code>{{this.content}}</code><br>
+            {{else}}
+                <p>{{this.content}}</p>
+            {{/if_eq}}
+        {{/each}}
+    {{/each}}
+</script>
+
+<!--Your new content will be displayed in here-->
+<div class="content-placeholder"></div>
+</body>
+</html>
