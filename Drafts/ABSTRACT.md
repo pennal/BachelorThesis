@@ -1,7 +1,0 @@
-LIBRA is a holistic recommender system, developed by the REVEAL team. It aids in finding relevant information that is pertinent to a users's history and intent by analyzing the semantic relationship between different resources.
-
-Although LIBRA guides the user in finding pertinent material, such as tutorials and documentation, it does not help in reducing the information overload that may be enclosed in each of those results. The goal of this project is to create a tool that is able to identify the relevant pieces of information in each document, and summarize it in such a way that the developer can choose the level of detail needed. 
-
-In order to provide such functionality, the tool must be able to first identify all the relevant components, such as code snippets, explanations, and pure documentation, and must then categorize such sections based on importance and relationship with other components, and with the context of the result. Once this identification is performed, the user will have the ability to decide how much information she wants to see, simply by dragging a slider, avoiding therefore the overload of information without compromising the important components that make up such result.
-
-The intended strategy is to augment an existing summarization method such as LexRank, which is a modified version of PageRank, to analyse the relationship between the components enclosed in a document and therefore determine the non essential parts, i.e. those that can be summarized, and those that should not be touched, such as code snippets. 

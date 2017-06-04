@@ -1,6 +1,6 @@
 language: scala
 
-before_script: cd Code/play-rest-api
+before_script: cd play-rest-api
 
 cache:
   directories:
