@@ -6,12 +6,13 @@ import ch.usi.inf.reveal.parsing.artifact.XmlSourceInfo
 import ch.usi.inf.reveal.parsing.model.HASTNodeSequence
 import ch.usi.inf.reveal.parsing.model.xml.{XmlNameNode, XmlSingleNode}
 import models._
-import play.api.mvc.{AbstractController, ControllerComponents}
+import play.api.mvc.{AbstractController, ControllerComponents, Request, RequestHeader}
 import stormed.{ErrorResponse, ParsingResponse, StormedService}
-import ch.usi.inf.reveal.parsing.units.InformationUnit
+import ch.usi.inf.reveal.parsing.units.{InformationUnit, NaturalLanguageTaggedUnit}
 import com.typesafe.config.ConfigFactory
 import play.api.Logger
 import play.api.libs.json._
+import play.mvc.Http.RequestBody
 
 import scala.util.Random
 
@@ -24,13 +25,28 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
   // Serializers/Deserializers for the different objects
   implicit val libraInformationUnitReads = Json.reads[LibraInformationUnit]
   implicit val extensionRequestReads = Json.reads[ExtensionRequest]
+  implicit val libraResponseUnitReads = Json.reads[LibraResponseUnit]
+  implicit val summaryResponseReads = Json.reads[SummaryResponse]
+
+
   implicit val libraInformationUnitWrites = Json.writes[LibraInformationUnit]
   implicit val libraResponseUnitWrites = Json.writes[LibraResponseUnit]
-
+  implicit val summaryResponseWrites = Json.writes[SummaryResponse]
 
   val manager: GraphManager = new GraphManager()
 
+  private def getHeader(request: RequestHeader): String = {
+    val userId: String = {
+      request.headers.get("X-Libra-UserId") match {
+        case Some(header) => header
+        case None =>
+          Logger.warn("NO HEADER FOUND ==> Going to the default one")
+          "default"
+      }
+    }
 
+    userId
+  }
 
   def helloWorld = Action {
     Ok(s"Hello World!")
@@ -44,18 +60,36 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
   }
 
+  def getAllUnitsForUser = Action { implicit request =>
+    val userId: String = getHeader(request)
+
+    val res = manager.getAllNodesForUser(userId).map {
+      case (iu, degree, url) =>
+        val contentType = {
+          if (iu.isInstanceOf[NaturalLanguageTaggedUnit]) {
+            "plaintext"
+          } else {
+            "code"
+          }
+        }
+        LibraResponseUnit(iu.id.toInt, degree, url, Some(iu.rawText), Some(contentType))
+    }
+
+    val res2: Map[String, Seq[LibraResponseUnit]] = res.groupBy(_.url)
+
+    val finalResult = res2.keys.map( myKey => SummaryResponse(myKey, res2(myKey)))
+
+    Logger.info(s"Returning")
+    val jsonResult = Json.obj("sites" -> finalResult)
+    Ok(jsonResult)
+
+  }
+
 
   def processInfoUnits = Action(parse.json) { implicit request =>
     val config = ConfigFactory.load().getConfig("holirank")
     // Fetch the user Id from the header
-    val userId: String = {
-      request.headers.get("X-Libra-UserId") match {
-        case Some(header) => header
-        case None =>
-          Logger.warn("NO HEADER FOUND ==> Going to the default one")
-          "default"
-      }
-    }
+    val userId: String = getHeader(request)
 
     Logger.info(s"Started Req")
     val body = request.body
@@ -115,7 +149,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
     Logger.info(s"Finished rank")
 
-    val res = seqOfUnits.map { case (iu, degree, url) => LibraResponseUnit(iu.id.toInt, degree, url) }
+    val res = seqOfUnits.map { case (iu, degree, url) => LibraResponseUnit(iu.id.toInt, degree, url, None, None) }
 
     // Once calculated, return the list to the client
     // The client MUST scale on the max value found in the returned list

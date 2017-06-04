@@ -20,7 +20,7 @@ import scala.concurrent.duration.Duration
   * Created by Lucas on 15.05.17.
   */
 object ContextGraph {
-  lazy val system = {
+  val system = {
     import com.typesafe.config._
     val config = ConfigFactory.load().getConfig("holirank")
     ActorSystem("SignalCollect", config)
@@ -99,21 +99,33 @@ class ContextGraph(val userId: String, similarityThreshold : Double = 0.1, isCon
     graph.removeVertex(unit)
   }
 
-  def rank(): Seq[(InformationUnit, Double, String)] = {
-    graph.execute(conf)
-
+  def unitsWithInfo(sortByProbability: Boolean = true): Seq[(InformationUnit, Double, String)] = {
     type UnitCentrality = (InformationUnit, Double, String) // IU, degree, url
     val unit2Centrality = graph.mapReduce(
-//      (vertex: HoliRankVertex) => Seq(vertex.id -> vertex.state), //Tuple(vertex, centrality)
+      //      (vertex: HoliRankVertex) => Seq(vertex.id -> vertex.state), //Tuple(vertex, centrality)
       (vertex: HoliRankVertex) => Seq((vertex.id, vertex.state, vertex.url)),
       (m1:Seq[UnitCentrality], m2:Seq[UnitCentrality]) => m1 ++ m2,
       Seq[UnitCentrality]())
 
     val centralitySum = unit2Centrality.map{_._2}.sum
-    unit2Centrality.map{
-        case(unit, centrality, url) => (unit, {centrality/centralitySum}, url)
-      }.sortBy {
-        case (unit, probability, url) => -probability
-      }
+    val units = unit2Centrality.map{
+      case(unit, centrality, url) => (unit, {centrality/centralitySum}, url)
     }
+
+      if (sortByProbability) {
+        units.sortBy {
+          case (unit, probability, url) => -probability
+        }
+      } else {
+        units.sortBy {
+          case (unit, probability, url) => unit.id
+        }
+      }
+
+  }
+
+  def rank(): Seq[(InformationUnit, Double, String)] = {
+    graph.execute(conf)
+    unitsWithInfo()
+  }
 }

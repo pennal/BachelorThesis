@@ -1,7 +1,6 @@
 package models
 
 import ch.usi.inf.reveal.parsing.units.InformationUnit
-import ch.usi.inf.reveal.parsing.units.similarity.SimilarityParameters
 import play.api.Logger
 
 /**
@@ -27,10 +26,14 @@ class GraphManager {
     nodes.foreach(node => g.removeUnit(node))
   }
 
+  def getAllNodesForUser(userId: String): Seq[(InformationUnit, Double, String)] = {
+    val g = getGraph(userId)
+    g.unitsWithInfo(false)
+  }
 
-  // TODO: Wrong return type
   def rank(userId: String): Seq[(InformationUnit, Double, String)] = {
     val graph = getGraph(userId)
+    Logger.info("Ranking started")
     graph.rank()
   }
 
@@ -44,6 +47,4 @@ class GraphManager {
     }
     graphs(userId)
   }
-
-
 }

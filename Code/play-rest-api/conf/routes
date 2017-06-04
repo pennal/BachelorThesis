@@ -2,3 +2,4 @@
 GET         /libra             controllers.LibraController.helloWorld
 POST         /libra             controllers.LibraController.processInfoUnits
 GET         /register          controllers.LibraController.registerNewUser
+GET         /all          controllers.LibraController.getAllUnitsForUser
