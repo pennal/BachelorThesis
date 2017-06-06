@@ -24,7 +24,7 @@ abstract class LibraPart {
 class LibraInformationUnit {
     private tags: Array<string>;
     private parsedContent: string;
-    private idx: number;
+    private idx: String;
 
     constructor() {
         this.tags = new Array<string>();
@@ -38,7 +38,7 @@ class LibraInformationUnit {
         this.parsedContent = content;
     }
 
-    setIndex(index: number) {
+    setIndex(index: String) {
         this.idx = index;
     }
 
@@ -63,8 +63,20 @@ abstract class AbstractParser {
     abstract getContent(): Array<LibraPart>;
     abstract getInformationUnits(): Array<LibraInformationUnit>;
 
-
     protected extractInformationUnitFromDOM(inputDOM: JQuery): LibraInformationUnit {
+        return this.extractInformationUnitFromInputAndTextDOM(inputDOM, inputDOM);
+    }
+
+    // Note: inputDOM is the dom that will be tagged, and therefore hidden when the bar slides
+    // If you need to extract data that is at a deeper level than the inputDOM, pass it as the textDOM
+    // i.e.:
+    // <div id="tagAndHideMe"> <--- inputDOM
+    //     <div id="uselessDiv">
+    //         <div id="useMeAsTheContent"> <--- textDOM
+    //         </div>
+    //     </div>
+    // </div>
+    protected extractInformationUnitFromInputAndTextDOM(inputDOM: JQuery, textDOM: JQuery): LibraInformationUnit {
         function hashString(string) {
             let hash = 0;
             if (string.length == 0) return hash;
@@ -75,10 +87,25 @@ abstract class AbstractParser {
             }
             return hash;
         }
+
+        function leftPad(number, targetLength) {
+            var output = number + '';
+            while (output.length < targetLength) {
+                output = '0' + output;
+            }
+            return output;
+        }
+
+        function containsAny(source,target)
+        {
+            var result = source.filter(function(item){ return target.indexOf(item) > -1});
+            return (result.length > 0);
+        }
+
         // Add the index
         var currentIDX = this._indexCounter++;
 
-        const libraIndexHash = hashString(this.url + "_" + currentIDX);
+        const libraIndexHash = hashString(this.url) + "_" + leftPad(currentIDX, 10);
 
         inputDOM.attr('LIBRA_IDX', libraIndexHash);
         // New unit
@@ -88,14 +115,20 @@ abstract class AbstractParser {
         unit.setIndex(libraIndexHash);
 
         // Set the parsed content by extracting it form the DOM
-        unit.setParsedContent(inputDOM.text());
+        console.log($(textDOM[0]).text().trim())
+        unit.setParsedContent($(textDOM[0]).text().trim());
 
         let tags = inputDOM.attr("class");
 
+        // TODO: This is hackish...
         if (tags !== undefined) {
             let tagsArray = tags.split(" ");
-            for (let i = 0; i < tagsArray.length; i++) {
-                unit.addTag(tagsArray[i]);
+            if (containsAny(tagsArray, ["prettyprint", "prettyprinted", "code"])) {
+                // This is code
+                unit.addTag("code");
+            } else {
+                // We assume its text
+                unit.addTag("plaintext");
             }
         } else {
             unit.addTag("plaintext");
@@ -132,14 +165,14 @@ class SODocument extends LibraDocument {
     }
 
     getInformationUnits(): Array<LibraInformationUnit> {
-
         // Get the question
         let arr = [];
         arr = arr.concat(this.question.getInformationUnits());
 
         // Get the comments for the question
         this.question.getParts().forEach(function(val) {
-            arr = arr.concat(val);
+            // Get all comments. For each comment, there is only one information unit (one paragraph)
+            arr = arr.concat(val.getInformationUnits()[0]);
         });
 
         // get the answers
@@ -147,7 +180,8 @@ class SODocument extends LibraDocument {
             arr = arr.concat(value.getInformationUnits());
             // for each question, get its comments
             value.getParts().forEach(function(comment) {
-                arr = arr.concat(comment);
+                // Get all comments. For each comment, there is only one information unit (one paragraph)
+                arr = arr.concat(comment.getInformationUnits()[0]);
             });
         });
 
@@ -198,19 +232,19 @@ class StackOverflowParser extends AbstractParser {
 
         var questionBody = $('.question');
 
-        var questionComments = $(questionBody).find('.comment')
-
-        var questionCommentList = [];
-        for (var j = 0; j < questionComments.length; j++) {
-            var commentBody = $(questionComments[j]).find('.comment-body');
-            let infoUnit = this.extractInformationUnitFromDOM($(commentBody));
-            questionCommentList.push(infoUnit);
-        }
+        // var questionComments = $(questionBody).find('.comment')
+        //
+        // var questionCommentList = [];
+        // for (var j = 0; j < questionComments.length; j++) {
+        //     var commentBody = $(questionComments[j]).find('.comment-body');
+        //     let infoUnit = this.extractInformationUnitFromDOM($(commentBody));
+        //     questionCommentList.push(infoUnit);
+        // }
 
 
 
         // Create a Question Object
-        let soQuestion = new SOQuestion(questionCommentList);
+        let soQuestion = new SOQuestion([]);
 
         // Start by parsing the question
         var questionPartElements = $('.question .postcell .post-text')[0].children;
@@ -221,7 +255,26 @@ class StackOverflowParser extends AbstractParser {
             soQuestion.addInformationUnit(infoUnit);
         }
 
+
         // Extract the comments
+        var questionComments = $(questionBody).find('.comment');
+        for (let c = 0; c < questionComments.length; c++) {
+            let currentQuestionComment = $(questionComments[c]);
+            let questionText = currentQuestionComment.find('.comment-copy');
+            let infoUnit = this.extractInformationUnitFromInputAndTextDOM(currentQuestionComment, $(questionText));
+
+            // Each comment is 1 paragraph, so this is fine
+            let comment = new SOComment();
+            comment.addInformationUnit(infoUnit);
+            soQuestion.addComment(comment);
+        }
+
+
+
+
+
+
+
         this.document.setQuestion(soQuestion);
 
         // Answers
@@ -230,20 +283,26 @@ class StackOverflowParser extends AbstractParser {
         // Loop over all answers found
         for (var i = 0; i < answers.length; i++) {
             var answerParts = $(answers[i]).find('.answercell .post-text')[0].children;
-
-            var comments = $(answers[i]).find('.comment');
-            var commentList = [];
-            for (var j = 0; j < comments.length; j++) {
-                var commentBody = $(comments[j]).find('.comment-body');
-                let infoUnit = this.extractInformationUnitFromDOM($(commentBody));
-                commentList.push(infoUnit);
-            }
-
-            let answer: SOAnswer = new SOAnswer(commentList);
+            let answer: SOAnswer = new SOAnswer([]);
 
             for (var j = 0; j < answerParts.length; j++) {
                 let infoUnit = this.extractInformationUnitFromDOM($(answerParts[j]));
                 answer.addInformationUnit(infoUnit);
+            }
+
+
+
+            // Extract the comments
+            var answerComments = $(answers[i]).find('.comment');
+            for (let c = 0; c < answerComments.length; c++) {
+                let currentAnswerComment = $(answerComments[c]);
+                let questionText = currentAnswerComment.find('.comment-copy');
+                let infoUnit = this.extractInformationUnitFromInputAndTextDOM(currentAnswerComment, $(questionText));
+
+                // Each comment is 1 paragraph, so this is fine
+                let comment = new SOComment();
+                comment.addInformationUnit(infoUnit);
+                answer.addComment(comment);
             }
             this.document.addAnswer(answer);
         }
@@ -524,20 +583,21 @@ $(document).ready(function() {
 
     if (foundParser) {
         // Send a message indicating the parser is working on extracting data
-        let mex = new ChromeMessage("started", {"message": "extraction started"});
-        chrome.runtime.sendMessage(mex.getData(), function (response) {
-            console.log("Starting parsing");
-            parser.parse();
+        // let mex = new ChromeMessage("started", {"message": "extraction started"});
+        // chrome.runtime.sendMessage(mex.getData(), function (response) {
+        //
+        // });
+        console.log("Starting parsing");
+        parser.parse();
 
-            content = parser.getInformationUnits();
+        content = parser.getInformationUnits();
 
-            console.log(content);
+        console.log(content);
 
-            // Send the message to the background script containing the parsed info
-            let data = new ChromeMessage("parsed", {"units": parser.getInformationUnits(), "url": url});
-            chrome.runtime.sendMessage(data.getData(), function (response) {
-                console.log(response);
-            });
+        // Send the message to the background script containing the parsed info
+        let data = new ChromeMessage("parsed", {"units": parser.getInformationUnits(), "url": url});
+        chrome.runtime.sendMessage(data.getData(), function (response) {
+            console.log(response);
         });
     } else {
         // Set the icon to indicate that no parser has been found

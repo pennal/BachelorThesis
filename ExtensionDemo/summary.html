@@ -2,27 +2,60 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dummy File</title>
+    <title>Summary</title>
     <script src="node_modules/handlebars/dist/handlebars.js"></script>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+
     <script src="built/summary.js"></script>
+
+    <style>
+        .vertical-align {
+            display: flex;
+            align-items: center;
+        }
+        .separator-line
+        {
+            border-bottom:2px solid #e2e2e2;
+        }
+    </style>
+
+
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap-theme.min.css">
 </head>
 <body>
 <!-- This is the template for the entries-->
 <script id="website-template" type="text/x-handlebars-template">
     {{#each sites}}
-        <h1>{{this.pageUrl}}</h1>
-        {{#each this.units}}
-            {{#if_eq this.contentType "code"}}
-                <code>{{this.content}}</code><br>
-            {{else}}
-                <p>{{this.content}}</p>
-            {{/if_eq}}
-        {{/each}}
+        <div class="container site separator-line" id="site_{{splitId this.units.0.idx}}">
+            <div class="row col-md-12">
+                <div class="pageInfo vertical-align col-md-12">
+                    <div class="col-md-8">
+                        <h2>
+                            <a class="pageTitle" target="_blank" href="{{this.pageUrl}}">Loading...</a>
+                        </h2>
+                    </div>
+                    <div class="col-md-4">
+                        <input id="slider_{{splitId this.units.0.idx}}" name="{{splitId this.units.0.idx}}" type="range" min="0" max="1" step="0.001" value="0">
+                    </div>
+                </div>
+            </div>
+            {{#each this.units}}
+            <div class="row col-md-12 informationUnit" centrality="{{this.degree}}">
+                {{#if_eq this.contentType "code"}}
+                <!-- DO NOT MOVE THIS TO NEW LINES. the whole layout gets messed up...the web is truly a magical place-->
+                    <pre><code>{{this.content}}</code></pre>
+                {{else}}
+                    <p>{{this.content}}</p>
+                {{/if_eq}}
+            </div>
+            {{/each}}
+        </div>
     {{/each}}
 </script>
 
 <!--Your new content will be displayed in here-->
-<div class="content-placeholder"></div>
+<div class="content-placeholder col-md-8 col-md-offset-2"></div>
 </body>
 </html>
