@@ -3,6 +3,6 @@ package models
 /**
   * Created by Lucas on 11.04.17.
   */
-case class LibraInformationUnit(idx: Int, parsedContent: String, tags: List[String]) {
+case class LibraInformationUnit(idx: String, parsedContent: String, tags: List[String]) {
 
 }

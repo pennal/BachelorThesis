@@ -72,7 +72,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
             "code"
           }
         }
-        LibraResponseUnit(iu.id.toInt, degree, url, Some(iu.rawText), Some(contentType))
+        LibraResponseUnit(iu.id, degree, url, Some(iu.rawText), Some(contentType))
     }
 
     val res2: Map[String, Seq[LibraResponseUnit]] = res.groupBy(_.url)
@@ -149,7 +149,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
     Logger.info(s"Finished rank")
 
-    val res = seqOfUnits.map { case (iu, degree, url) => LibraResponseUnit(iu.id.toInt, degree, url, None, None) }
+    val res = seqOfUnits.map { case (iu, degree, url) => LibraResponseUnit(iu.id, degree, url, None, None) }
 
     // Once calculated, return the list to the client
     // The client MUST scale on the max value found in the returned list
