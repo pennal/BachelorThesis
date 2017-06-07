@@ -1,0 +1,18 @@
+.vertical-align {
+    display: flex;
+    align-items: center;
+}
+.separator-line
+{
+    border-bottom:2px solid #e2e2e2;
+}
+
+.pageInfo {
+    padding: 0;
+    margin: 0;
+}
+
+.pageInfo > div {
+    padding: 0;
+    margin: 0;
+}
