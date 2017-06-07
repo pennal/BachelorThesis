@@ -83,7 +83,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     // the return variable should only have one entry
                     var activeTab = arrayOfTabs[0];
                     chrome.browserAction.setIcon({
-                        path: "icon.png",
+                        path: "../../assets/icon.png",
                         tabId: activeTab.id
                     }, function () {
                         console.log("Icon was set");

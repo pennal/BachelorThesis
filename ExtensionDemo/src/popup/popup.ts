@@ -1,4 +1,3 @@
-///<reference path="../node_modules/@types/jqueryui/index.d.ts"/>
 /**
  * Created by Lucas on 09.04.17.
  */
@@ -51,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Generate summary button
     $('#summaryButton').click(function() {
-        var newURL = "summary.html";
+        var newURL = "src/summaryPage/summary.html";
         chrome.tabs.create({ url: newURL });
     });
 
