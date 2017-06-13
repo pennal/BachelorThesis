@@ -1,6 +1,5 @@
 
 var successfulParse = false;
-var content;
 
 
 let serviceURL;
@@ -42,10 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-
-
-
-
     if (request.type === "started") {
         console.log("Started parsing page...");
         // Should show a spinner or middle status icon
@@ -58,15 +53,26 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         successfulParse = true;
         sendResponse({message: "RECEIVED"});
 
+        $(document.documentElement).attr('libra_status','processing');
+
+        chrome.tabs.query({active: true, currentWindow: true}, function (arrayOfTabs) {
+            // since only one tab should be active and in the current window at once
+            // the return variable should only have one entry
+            var activeTab = arrayOfTabs[0];
+
+            // This has to be in here!
+            // Send the ids to perform the injection
+            // of the sort order
+            chrome.tabs.sendMessage(activeTab.id, {
+                type: "setStatus",
+                status: "processing"
+            },null);
+        });
+
 
         var req = new XMLHttpRequest();
-
-
-
-
         console.log("Service URL is " + serviceURL);
-
-        req.open('POST', serviceURL + '/libra', true);
+        req.open('POST', serviceURL + '/rank', true);
         req.setRequestHeader("Content-Type", "application/json");
         req.setRequestHeader("X-Libra-UserId", userId);
         req.onreadystatechange = function(e) {
@@ -74,9 +80,31 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 // Here it means that everything went well
                 let json = JSON.parse(req.responseText);
                 // TODO: Is this 'tab' safe?
-                content = json.units;
+                let content = json.units;
+
+
+                //TODO: Inject each div with the sort order
                 console.log("Received Data:");
                 console.log(content);
+
+                let sortedContent = content.sort(function(a, b) {
+                    return b.degree - a.degree;
+                });
+
+                // Group the content, as to avoid sending too many messages
+                let messageContent = [];
+                for (let d = 0; d < sortedContent.length; d++) {
+                    let data = {
+                        type: "injectId",
+                        libraId: sortedContent[d].idx,
+                        sortId: d
+                    };
+                    messageContent.push(data)
+                }
+
+
+
+
 
                 chrome.tabs.query({active: true, currentWindow: true}, function (arrayOfTabs) {
                     // since only one tab should be active and in the current window at once
@@ -87,6 +115,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                         tabId: activeTab.id
                     }, function () {
                         console.log("Icon was set");
+                    });
+
+                    // This has to be in here!
+                    // Send the ids to perform the injection
+                    // of the sort order
+                    chrome.tabs.sendMessage(activeTab.id, {
+                        type: "injectId",
+                        content: messageContent
+                    }, function (response) {
+
+                    });
+
+                    chrome.tabs.sendMessage(activeTab.id, {
+                        type: "setStatus",
+                        status: "finished"
+                    }, function() {
+                        console.log("Set status finished");
                     });
                 });
             } else {
@@ -100,32 +145,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     } else if (request.type === "alert") {
         alert("Hello from the popup")
     } else if (request.type === "valueChanged") {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-            const newData = {
-                sliderVal: request.content,
-                pageContent: content,
-                type: "valueChanged"
-            };
-            chrome.tabs.sendMessage(tabs[0].id, newData, function(response) {});
-        });
+        // chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+        //     const newData = {
+        //         sliderVal: request.content,
+        //         pageContent: content,
+        //         type: "valueChanged"
+        //     };
+        //     chrome.tabs.sendMessage(tabs[0].id, newData, function(response) {});
+        // });
     } else if (request.type === "successfulParse") {
         console.log("Successful: " + successfulParse);
-        // Find Min/Max and scale the slider
-
-        let max = content[0].degree;
-        let min = content[0].degree;
-
-        for (let i = 0; i < content.length; i++) {
-            let curr = content[i].degree;
-            if (curr < min) {
-                min = curr;
-            }
-            if (curr > max) {
-                max = curr;
-            }
-        }
-
-        sendResponse({successful: successfulParse, max: max, min: min});
+        sendResponse({successful: successfulParse});
     } else if (request.type === "urlRetrieve") {
         let url = localStorage.getItem('serviceURL');
         if (url === null) {
@@ -146,9 +176,21 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
+
+// When the tab url changes, we remove the slider value saved
+chrome.tabs.onUpdated.addListener(function(tabId, info) {
+    console.log(tabId);
+    console.log(JSON.stringify(info));
+    const key = "SliderValue___" + tabId;
+    localStorage.removeItem(key);
+});
+
+// chrome.tabs.onHighlighted.addListener()
+
+// When the tab is closed, we remove the slider value saved
 chrome.tabs.onRemoved.addListener(function(tabId, info) {
-    chrome.tabs.get(tabId, function(tab) {
-        const key = "SliderValue___" + tab.id + "___" + tab.url;
-        localStorage.removeItem(key);
-    });
+    console.log(tabId);
+    console.log(JSON.stringify(info));
+    const key = "SliderValue___" + tabId
+    localStorage.removeItem(key);
 });

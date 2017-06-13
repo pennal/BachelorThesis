@@ -19,10 +19,10 @@
     {{#if sites}}
     <div class="container">
         <div class="row vertical-align">
-        <div class="col-md-4">
+        <div class="col-lg-4">
             <h1>Summary</h1>
         </div>
-            <div class="col-md-8">
+            <div class="col-lg-8">
                 <h4 id="masterSliderLabel">Visible: </h4>
                 <input id="masterSlider" type="range" min="1" max="11" step="1" value="11">
             </div>
@@ -31,20 +31,20 @@
 
     {{#each sites}}
     <div class="container site separator-line" id="site_{{splitId this.units.0.idx}}">
-        <div class="row col-md-12 sliderContainer">
-            <div class="pageInfo vertical-align col-md-12">
-                <div class="col-md-8">
-                    <h2>
+        <div class="row col-lg-12 sliderContainer">
+            <div class="pageInfo vertical-align col-lg-12">
+                <div class="col-lg-8">
+                    <h3>
                         <a class="pageTitle" target="_blank" href="{{this.pageUrl}}">Loading...</a>
-                    </h2>
+                    </h3>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <input class="siteSlider" id="slider_{{splitId this.units.0.idx}}" name="{{splitId this.units.0.idx}}" type="range" min="0" max="1" step="0.001" value="0">
                 </div>
             </div>
         </div>
         {{#each this.units}}
-        <div class="row col-md-12 informationUnit" centrality="{{this.degree}}">
+        <div class="row col-lg-12 informationUnit" centrality="{{this.degree}}">
             {{#if_eq this.contentType "code"}}
             <!-- DO NOT MOVE THIS TO NEW LINES. the whole layout gets messed up...the web is truly a magical place-->
             <pre><code>{{this.content}}</code></pre>
@@ -60,7 +60,7 @@
 
 
     {{else}}
-    <div class="col-md-12 text-center">
+    <div class="col-lg-12 text-center">
         <h1>Nothing has been parsed yet</h1>
         <p>Start by visting some pages to collect some information</p>
     </div>
@@ -73,6 +73,6 @@
 </script>
 
 <!--Your new content will be displayed in here-->
-<div class="content-placeholder col-md-8 col-md-offset-2"></div>
+<div class="content-placeholder col-lg-8 col-lg-offset-2"></div>
 </body>
 </html>

@@ -1,0 +1,99 @@
+body, html {
+    width:500px;
+    padding: 0;
+    margin:0;
+}
+
+#content {
+    width: 100%;
+}
+
+.left {
+    float: left;
+    width: 20%;
+    font-size: 12pt;
+}
+
+.right {
+    float: left;
+    width: 75%;
+}
+
+
+.full {
+    width: 100%;
+    overflow: auto;
+}
+
+
+#mySlider {
+    width: 99%;
+}
+
+#sliderValue {
+    width:100%;
+    text-align: center;
+}
+
+
+
+#summaryButton {
+    background-color: #E80B18;
+    text-align: center;
+    color: #FCFCFC;
+    padding-top:15px;
+    padding-bottom:15px;
+}
+
+#summaryButton:hover {
+    cursor: pointer;
+}
+
+
+
+#serviceURLInput {
+    height:20px;
+}
+
+
+.sectionTitle {
+    margin: 0;
+    padding-top:8px;
+    padding-bottom:8px;
+    padding-left:8px;
+    background-color: #D0D0D0;
+}
+
+.dataRow {
+    position: relative;
+    padding-left: 10px;
+    width: 96%;
+
+    height: 30px;
+    line-height:30px;
+    padding-top:2px;
+    padding-bottom:2px;
+}
+
+#sessionInformationContainer {
+    position: relative;
+}
+
+#saveButton {
+    float: right;
+    padding: 8px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    margin-bottom: 2px;
+    background-color: #2E8A1E;
+    color: #FCFCFC;
+}
+
+#saveButton:hover {
+    cursor: pointer;
+}
+
+#messageContainer {
+    text-align: center;
+}

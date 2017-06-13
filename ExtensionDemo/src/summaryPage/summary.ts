@@ -101,15 +101,19 @@ $(document).ready(function () {
                     let sliderValue = this.value;
                     let innerSites = $('.site');
 
+
+
                     masterSliderLabel.text(sliderValue == 11 ? "Showing all" : "Showing " + sliderValue + " best units");
 
                     for (var s = 0; s < innerSites.length; s++) {
                         let currentSite = $(innerSites[s]);
                         let units = $(currentSite).children('.informationUnit');
 
+                        let siteSlider = $(currentSite).find('.siteSlider');
+                        siteSlider.val(siteSlider.prop("min"));
+
                         if (sliderValue == 11) {
                             for (let u = 0; u < units.length; u++) {
-                                console.log(units[u]);
                                 $(units[u]).show();
                             }
                         } else {
@@ -119,11 +123,7 @@ $(document).ready(function () {
                                 return  bValue - aValue;
                             });
 
-
-
                             for (let m = 0; m < sortedUnits.length; m++) {
-                                console.log(m + " < " + sliderValue);
-
                                 if (m < sliderValue) {
                                     $(sortedUnits[m]).show();
                                 } else {
@@ -131,8 +131,7 @@ $(document).ready(function () {
                                 }
                             }
                         }
-                        // let siteSlider = $(currentSite).find('.siteSlider');
-                        // siteSlider.val(siteSlider.prop("min"));
+
                     }
                 })
             }).fail(function(jqXHR, textStatus, errorThrown) {

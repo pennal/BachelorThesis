@@ -24,7 +24,7 @@ abstract class LibraPart {
 class LibraInformationUnit {
     private tags: Array<string>;
     private parsedContent: string;
-    private idx: String;
+    private idx: string;
 
     constructor() {
         this.tags = new Array<string>();
@@ -38,11 +38,11 @@ class LibraInformationUnit {
         this.parsedContent = content;
     }
 
-    setIndex(index: String) {
+    setIndex(index: string) {
         this.idx = index;
     }
 
-    getTags() {
+    getTags(): Array<string> {
         return this.tags;
     }
 }
@@ -115,7 +115,7 @@ abstract class AbstractParser {
         unit.setIndex(libraIndexHash);
 
         // Set the parsed content by extracting it form the DOM
-        console.log($(textDOM[0]).text().trim())
+        // console.log($(textDOM[0]).text().trim())
         unit.setParsedContent($(textDOM[0]).text().trim());
 
         let tags = inputDOM.attr("class");
@@ -556,10 +556,10 @@ class ChromeMessage {
 }
 
 
+
 $(document).ready(function() {
     let url = window.location.href;
     console.log("Extension is ready; jQuery version: "  + $().jquery + "; URL: " + url);
-
 
     let parser: AbstractParser;
     let foundParser = true;
@@ -584,7 +584,7 @@ $(document).ready(function() {
     if (foundParser) {
         // Send a message indicating the parser is working on extracting data
         // let mex = new ChromeMessage("started", {"message": "extraction started"});
-        // chrome.runtime.sendMessage(mex.getData(), function (response) {
+        // chrome.runtime.sendMessageToCurrentTab(mex.getData(), function (response) {
         //
         // });
         console.log("Starting parsing");
@@ -609,25 +609,34 @@ $(document).ready(function() {
 
     chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         // Event comes from the BG script
+        console.log(message);
         if (message.type === "valueChanged") {
-            // console.log(message);
-            let dataArr = message.pageContent;
+            // Get the value from the slider
+            const elements = $(document).find("[sortorder]");
+            const sliderVal = Math.floor(Number(message.sliderVal) / 100.0 * elements.length);
 
-            for (let i = 0; i < dataArr.length; i++) {
-                const curr = dataArr[i];
-
-                // console.log(curr)
-
-                const sliderVal = Number(message.sliderVal);
-                const currentDiv = $('[libra_idx="' + curr.idx + '"]');
-
-                // console.log("Degree: " + curr.degree);
-                if (curr.degree >= sliderVal) {
-                    currentDiv.show();
+            // Find all divs tagged with the sort identifier
+            elements.each(function(index, element) {
+                let sortIndex = Number($(element).attr('sortorder'));
+                if (sortIndex == 1 || sortIndex <= sliderVal) {
+                    $(element).show();
                 } else {
-                    currentDiv.hide();
+                    $(element).hide();
                 }
+            });
+        } else if (message.type === "injectId") {
+            for (var i = 0; i < message.content.length; i++){
+                let currentUnit = message.content[i];
+                let informationUnit = $(document).find('[libra_idx="' + currentUnit.libraId + '"]');
+                informationUnit.attr('sortorder', (currentUnit.sortId + 1));
             }
+        } else if (message.type === "setStatus") {
+            $(document.documentElement).attr('libra_status', message.status);
+        } else if (message.type === "getStatus") {
+            const status = $(document.documentElement).attr('libra_status');
+
+            console.log("STATUS: " + status);
+            sendResponse({status: status});
 
         }
     })
