@@ -144,15 +144,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         req.send(payload);
     } else if (request.type === "alert") {
         alert("Hello from the popup")
-    } else if (request.type === "valueChanged") {
-        // chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-        //     const newData = {
-        //         sliderVal: request.content,
-        //         pageContent: content,
-        //         type: "valueChanged"
-        //     };
-        //     chrome.tabs.sendMessage(tabs[0].id, newData, function(response) {});
-        // });
     } else if (request.type === "successfulParse") {
         console.log("Successful: " + successfulParse);
         sendResponse({successful: successfulParse});
