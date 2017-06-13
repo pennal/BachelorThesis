@@ -23,8 +23,8 @@
             <h1>Summary</h1>
         </div>
             <div class="col-lg-8">
-                <h4 id="masterSliderLabel">Visible: </h4>
-                <input id="masterSlider" type="range" min="1" max="11" step="1" value="11">
+                <h4 id="masterSliderLabel"></h4>
+                <input id="masterSlider" type="range" min="1" max="100" step="1" value="100">
             </div>
         </div>
     </div>
@@ -39,12 +39,12 @@
                     </h3>
                 </div>
                 <div class="col-lg-4">
-                    <input class="siteSlider" id="slider_{{splitId this.units.0.idx}}" name="{{splitId this.units.0.idx}}" type="range" min="0" max="1" step="0.001" value="0">
+                    <input class="siteSlider" id="slider_{{splitId this.units.0.idx}}" name="{{splitId this.units.0.idx}}" type="range" min="1" max="100" step="1" value="100">
                 </div>
             </div>
         </div>
         {{#each this.units}}
-        <div class="row col-lg-12 informationUnit" centrality="{{this.degree}}">
+        <div class="row col-lg-12 informationUnit" centrality="{{this.degree}}" libra_idx="{{this.idx}}">
             {{#if_eq this.contentType "code"}}
             <!-- DO NOT MOVE THIS TO NEW LINES. the whole layout gets messed up...the web is truly a magical place-->
             <pre><code>{{this.content}}</code></pre>

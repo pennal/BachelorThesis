@@ -39,11 +39,32 @@ $(document).ready(function () {
 
                 // Current site
                 const sites = $('.site');
+
+                // THis function needs to be here! Unfortunately when setting the value of the site
+                // sliders the process is not triggered, so it has to be called manually
+                function updateContentOnSlideChange(siteId, sliderValue) {
+                    console.log("called update on site " + siteId + " with value " + sliderValue);
+                    const elements = $(document).find("[sortorder_" + siteId + "]");
+                    const sliderVal = Math.floor(Number(sliderValue) / 100.0 * elements.length);
+
+                    // Find all divs tagged with the sort identifier
+                    elements.each(function(index, element) {
+                        let sortIndex = Number($(element).attr('sortorder_' + siteId));
+                        if (sortIndex == 1 || sortIndex <= sliderVal) {
+                            $(element).show();
+                        } else {
+                            $(element).hide();
+                        }
+                    });
+                }
                 // For each of the available sites
                 for (let i = 0; i < sites.length; i++) {
                     // Get the page titles
                     const site = $(sites[i]);
                     const siteId = site.attr('id').split('_')[1];
+
+                    // Get the content from the response
+                    let content = data.sites[i].units;
 
                     // Obtain the title for the page
                     const url = site.find(".pageTitle").attr('href');
@@ -55,83 +76,42 @@ $(document).ready(function () {
                         site.find(".pageTitle").text(pageTitle);
                     });
 
-                    // Find max and min for the slider
-                    let min = 2;
-                    let max = 0;
-                    for (let j = 0; j < data.sites[i].units.length; j++) {
-                        const deg = data.sites[i].units[j].degree;
-                        if (deg < min) { min = deg; }
-                        if (deg > max) { max = deg; }
+                    // sort the units by centrality
+                    let sortedContent = content.sort(function(a, b) {
+                        return b.degree - a.degree;
+                    });
+
+
+                    // For each of the units, we need to inject the ID
+                    for (let d = 0; d < sortedContent.length; d++) {
+                        let currentUnit = sortedContent[d];
+                        let informationUnit = $(document).find('[libra_idx="' + currentUnit.idx + '"]');
+                        informationUnit.attr('sortorder_' + siteId, (d + 1));
                     }
 
 
-                    // Set up the slider
-                    let sliderId = 'slider_' + siteId;
-
-                    let slider = <HTMLInputElement>document.getElementById(sliderId);
-
-                    slider.max = max + "";
-                    slider.min = min + "";
-                    slider.value = min + "";
-                    slider.step = ((max - min) / data.sites[i].units.length) + "";
-
-
                     // Set up the section sliders
-                    $('#' + sliderId).on('input change', function() {
-                        const children = site.children('.informationUnit')
-                        const sliderValue = this.value;
-                        for (let c = 0; c < children.length; c++) {
-                            const child = $(children[c]);
-                            const currentDegree = child.attr('centrality');
-                            if (currentDegree >= sliderValue) {
-                                child.show();
-                            } else {
-                                child.hide();
-                            }
-                        }
-
+                    $('#slider_' + siteId).on('input change', function() {
+                        updateContentOnSlideChange(siteId, this.value);
                     });
                 }
 
                 // If the sliders are setup, prepare the master slider
                 let masterSlider = <HTMLInputElement>document.getElementById("masterSlider");
                 let masterSliderLabel = $('#masterSliderLabel');
-                masterSliderLabel.text("Showing all");
+                masterSliderLabel.text("Showing 100%");
                 $('#masterSlider').on('input change', function () {
                     let sliderValue = this.value;
-                    let innerSites = $('.site');
+                    let allSliders =  $('.siteSlider');
+
+                    masterSliderLabel.text("Showing " + this.value + "%");
 
 
-
-                    masterSliderLabel.text(sliderValue == 11 ? "Showing all" : "Showing " + sliderValue + " best units");
-
-                    for (var s = 0; s < innerSites.length; s++) {
-                        let currentSite = $(innerSites[s]);
-                        let units = $(currentSite).children('.informationUnit');
-
-                        let siteSlider = $(currentSite).find('.siteSlider');
-                        siteSlider.val(siteSlider.prop("min"));
-
-                        if (sliderValue == 11) {
-                            for (let u = 0; u < units.length; u++) {
-                                $(units[u]).show();
-                            }
-                        } else {
-                            let sortedUnits = units.get().sort(function(a, b) {
-                                let aValue = Number($(a).attr('centrality'));
-                                let bValue = Number($(b).attr('centrality'));
-                                return  bValue - aValue;
-                            });
-
-                            for (let m = 0; m < sortedUnits.length; m++) {
-                                if (m < sliderValue) {
-                                    $(sortedUnits[m]).show();
-                                } else {
-                                    $(sortedUnits[m]).hide();
-                                }
-                            }
-                        }
-
+                    for (let s = 0; s < allSliders.length; s++) {
+                        let siteId = allSliders[s].getAttribute("id").split("_")[1];
+                        let currentSlider = <HTMLInputElement> allSliders[s];
+                        currentSlider.value = sliderValue;
+                        updateContentOnSlideChange(siteId, sliderValue);
                     }
                 })
             }).fail(function(jqXHR, textStatus, errorThrown) {
