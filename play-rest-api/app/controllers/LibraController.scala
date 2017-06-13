@@ -55,6 +55,7 @@ class LibraController @Inject() (components: ControllerComponents) extends Abstr
 
   def registerNewUser = Action {
     val userId = Random.alphanumeric take 32 mkString("")
+    Logger.info(s"Registering user with id $userId")
     val jsonResult = Json.obj("userId" -> userId)
     Ok(jsonResult)
 
