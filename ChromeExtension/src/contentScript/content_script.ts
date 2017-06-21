@@ -119,7 +119,7 @@ abstract class AbstractParser {
         unit.setParsedContent($(textDOM[0]).text().trim());
 
         let tags = inputDOM.attr("class");
-        
+
         if (tags !== undefined) {
             let tagsArray = tags.split(" ");
             if (containsAny(tagsArray, ["prettyprint", "prettyprinted", "code"])) {
