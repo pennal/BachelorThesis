@@ -11,6 +11,12 @@ The project contains two main components:
  2. Chrome Extension, written in TypeScript
 
 ## Building the project
+Start by cloning the project:
+
+```bash
+git clone https://github.com/pennal/BachelorThesis.git
+```
+
 ### Web service
 To build the web service, you need:
 

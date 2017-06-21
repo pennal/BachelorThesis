@@ -94,11 +94,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             if (req.readyState == 4 && req.status == 200) {
                 // Here it means that everything went well
                 let json = JSON.parse(req.responseText);
-                // TODO: Is this 'tab' safe?
                 let content = json.units;
 
-
-                //TODO: Inject each div with the sort order
                 console.log("Received Data:");
                 console.log(content);
 

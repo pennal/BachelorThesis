@@ -119,8 +119,7 @@ abstract class AbstractParser {
         unit.setParsedContent($(textDOM[0]).text().trim());
 
         let tags = inputDOM.attr("class");
-
-        // TODO: This is hackish...
+        
         if (tags !== undefined) {
             let tagsArray = tags.split(" ");
             if (containsAny(tagsArray, ["prettyprint", "prettyprinted", "code"])) {
@@ -232,15 +231,6 @@ class StackOverflowParser extends AbstractParser {
 
         var questionBody = $('.question');
 
-        // var questionComments = $(questionBody).find('.comment')
-        //
-        // var questionCommentList = [];
-        // for (var j = 0; j < questionComments.length; j++) {
-        //     var commentBody = $(questionComments[j]).find('.comment-body');
-        //     let infoUnit = this.extractInformationUnitFromDOM($(commentBody));
-        //     questionCommentList.push(infoUnit);
-        // }
-
 
 
         // Create a Question Object
@@ -268,12 +258,6 @@ class StackOverflowParser extends AbstractParser {
             comment.addInformationUnit(infoUnit);
             soQuestion.addComment(comment);
         }
-
-
-
-
-
-
 
         this.document.setQuestion(soQuestion);
 
@@ -583,14 +567,7 @@ $(document).ready(function() {
 
     if (foundParser) {
         // Send a message indicating the parser is working on extracting data
-        // let mex = new ChromeMessage("started", {"message": "extraction started"});
-        // chrome.runtime.sendMessageToCurrentTab(mex.getData(), function (response) {
-        //
-        // });
         chrome.runtime.sendMessage({type: "startedParsing"}, null);
-
-
-
         console.log("Starting parsing");
         parser.parse();
 
@@ -603,12 +580,7 @@ $(document).ready(function() {
         chrome.runtime.sendMessage(data.getData(), function (response) {
             console.log(response);
         });
-    } else {
-        // Set the icon to indicate that no parser has been found
     }
-
-
-
 
 
     chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
