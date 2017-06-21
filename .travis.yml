@@ -1,6 +1,6 @@
 language: scala
 
-before_script: cd play-rest-api
+before_script: cd WebService
 
 cache:
   directories:
