@@ -2,7 +2,7 @@
 	<img src="Other/ThesisLogo.png" width="300pt"/>
 	<h1>WebDistiller</h1>
 </div>
-WebDistiller is a summarizer built on top of LIBRA, a holistic recommender developed by the [REVEAL](http://reveal.inf.usi.ch/) team @[Università della Svizzera Italiana](http://www.inf.usi.ch/)
+WebDistiller is a summarizer built on top of LIBRA, a holistic recommender developed by the <a href="http://reveal.inf.usi.ch/">REVEAL</a> team @<a href="http://www.inf.usi.ch/">Università della Svizzera Italiana</a>
 
 ## Structure
 The project contains two main components: 
