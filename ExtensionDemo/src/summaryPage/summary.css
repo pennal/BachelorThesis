@@ -16,3 +16,18 @@
     padding: 0;
     margin: 0;
 }
+
+
+#masterSlider {
+    width: 100%;
+}
+
+@media (min-width: 1140px) {
+    #masterSlider {
+        width: 96%;
+    }
+}
+
+
+
+

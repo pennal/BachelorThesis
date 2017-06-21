@@ -40,10 +40,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+
+function setIcon(color) {
+    chrome.tabs.query({active: true, currentWindow: true}, function (arrayOfTabs) {
+        // since only one tab should be active and in the current window at once
+        // the return variable should only have one entry
+        var activeTab = arrayOfTabs[0];
+        chrome.browserAction.setIcon({
+            path: "../../assets/" + color + ".png",
+            tabId: activeTab.id
+        }, function () {
+            console.log("Icon was set");
+        });
+    });
+}
+
+
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    if (request.type === "started") {
+    if (request.type === "startedParsing") {
         console.log("Started parsing page...");
         // Should show a spinner or middle status icon
+        setIcon("yellow");
     } else if (request.type === "parsed") {
         console.log("Finished parsing");
         // console.log("Data Received length: " + request.content.units.length);
@@ -102,7 +119,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     messageContent.push(data)
                 }
 
-
+                setIcon("green");
 
 
 
@@ -110,13 +127,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     // since only one tab should be active and in the current window at once
                     // the return variable should only have one entry
                     var activeTab = arrayOfTabs[0];
-                    chrome.browserAction.setIcon({
-                        path: "../../assets/icon.png",
-                        tabId: activeTab.id
-                    }, function () {
-                        console.log("Icon was set");
-                    });
-
                     // This has to be in here!
                     // Send the ids to perform the injection
                     // of the sort order
@@ -136,6 +146,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 });
             } else {
                 console.log(req.responseText);
+                setIcon("red");
+                chrome.tabs.query({active: true, currentWindow: true}, function (arrayOfTabs) {
+                    // since only one tab should be active and in the current window at once
+                    // the return variable should only have one entry
+                    var activeTab = arrayOfTabs[0];
+                    chrome.tabs.sendMessage(activeTab.id, {
+                        type: "setStatus",
+                        status: "error"
+                    }, function () {
+                        console.log("Set status finished");
+                    });
+                });
+
             }
         };
         var payload = JSON.stringify(request.content);

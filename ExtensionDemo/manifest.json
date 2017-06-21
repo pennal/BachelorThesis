@@ -1,34 +1,30 @@
 {
   "manifest_version": 2,
-
-  "name": "LIBRA Parser",
-  "description": "Starter for the parser extension",
+  "name": "WebDistiller",
+  "description": "Holistic Summarizer built on LIBRA",
   "version": "1.0",
-
   "browser_action": {
-    "default_icon": "./assets/icon_dark.png",
+    "default_icon": "./assets/grey.png",
     "default_popup": "./src/popup/popup.html",
     "content_security_policy": "unsafe-inline"
   },
+  "icons": {
+    "16": "./assets/16x16.png",
+    "48": "./assets/48x48.png",
+    "128": "./assets/128x128.png"
 
-
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
       "js": ["./node_modules/jquery/dist/jquery.min.js","./built/contentScript/content_script.js"]
     }
   ],
-
   "background": {
     "page": "./src/background/background.html",
     "persistent": true
   },
-
-
-
   "content_security_policy": "script-src 'self' 'unsafe-eval' ; object-src 'self'",
-
-
   "permissions": [
     "activeTab"
   ]

@@ -19,10 +19,10 @@
     {{#if sites}}
     <div class="container">
         <div class="row vertical-align">
-        <div class="col-lg-4">
+        <div class="col-xs-4">
             <h1>Summary</h1>
         </div>
-            <div class="col-lg-8">
+            <div class="col-xs-8">
                 <h4 id="masterSliderLabel"></h4>
                 <input id="masterSlider" type="range" min="1" max="100" step="1" value="100">
             </div>
@@ -33,12 +33,12 @@
     <div class="container site separator-line" id="site_{{splitId this.units.0.idx}}">
         <div class="row col-lg-12 sliderContainer">
             <div class="pageInfo vertical-align col-lg-12">
-                <div class="col-lg-8">
+                <div class="col-xs-8">
                     <h3>
                         <a class="pageTitle" target="_blank" href="{{this.pageUrl}}">Loading...</a>
                     </h3>
                 </div>
-                <div class="col-lg-4">
+                <div class="col-xs-4">
                     <input class="siteSlider" id="slider_{{splitId this.units.0.idx}}" name="{{splitId this.units.0.idx}}" type="range" min="1" max="100" step="1" value="100">
                 </div>
             </div>

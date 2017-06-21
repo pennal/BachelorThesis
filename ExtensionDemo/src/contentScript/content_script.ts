@@ -587,6 +587,10 @@ $(document).ready(function() {
         // chrome.runtime.sendMessageToCurrentTab(mex.getData(), function (response) {
         //
         // });
+        chrome.runtime.sendMessage({type: "startedParsing"}, null);
+
+
+
         console.log("Starting parsing");
         parser.parse();
 

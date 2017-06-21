@@ -103,10 +103,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 sliderContainer.hide();
                 messageContainer.show();
                 messageContainer.text("Processing content...hold on");
-
-
-
-
             } else if (response.status === "finished") {
                 // Has extracted all that is needed
                 sliderContainer.show();
@@ -131,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 chrome.runtime.getBackgroundPage(function (bg) {
                     let slider = $('input[name=mySliderName]');
                     //noinspection TypeScriptUnresolvedFunction
-                    slider.on('input change', function() {
+                    slider.on('input change', function () {
                         const sliderValue = slider.val();
                         // Send the message to the background script, with the new value
                         let data = {
@@ -141,10 +137,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         sendMessageToCurrentTab(data, null);
 
                         updateSliderLabel(sliderValue);
-                        saveSliderValues({ value: sliderValue });
-                    } );
+                        saveSliderValues({value: sliderValue});
+                    });
 
                 });
+            } else if (response.status === "error") {
+                sliderContainer.hide();
+                messageContainer.show();
+
+                messageContainer.text("An error has occured while parsing the page")
             } else {
                 // Page is unknown
                 sliderContainer.hide();
