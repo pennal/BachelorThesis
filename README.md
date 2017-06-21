@@ -53,5 +53,3 @@ As an example, you can use [this one right here](http://stackoverflow.com/questi
 The extension icon will change color to indicate processing, and once done the icon will turn green. Click on the icon, and drag the available slider to start filtering the content. 
 
 To generate a summary, click on the `Generate Summary` button inside the popup. This will open a new page with which you can interact. 
-
-<a href="http://reveal.inf.usi.ch/"><img align="right" src="Other/REVEALogo-black.pdf" width="200pt"/></a>
