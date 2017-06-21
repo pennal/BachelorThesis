@@ -1,11 +1,13 @@
 package stormed
 
-import java.security.cert.X509Certificate
-import org.json4s.native.Serialization.{read, write}
-import ch.usi.inf.reveal.parsing.artifact.ArtifactSerializer
-import javax.net.ssl._
-import scalaj.http.Http
 import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl._
+
+import ch.usi.inf.reveal.parsing.artifact.ArtifactSerializer
+import org.json4s.native.Serialization.{read, write}
+
+import scalaj.http.Http
 
 
 object StormedService {

@@ -1,17 +1,13 @@
 package models
 
-import com.signalcollect.{ExecutionConfiguration, Graph, GraphBuilder}
-import stormed.{HoliRankEdge, HoliRankVertex}
-
+import akka.actor.ActorSystem
+import akka.event.Logging
 import ch.usi.inf.reveal.parsing.units.InformationUnit
-
-import com.signalcollect.DefaultEdge
-import com.signalcollect.configuration.ExecutionMode
-
 import ch.usi.inf.reveal.parsing.units.similarity.InformationUnitSimilarity._
 import ch.usi.inf.reveal.parsing.units.similarity.SimilarityParameters
-import akka.event.Logging
-import akka.actor.ActorSystem
+import com.signalcollect.configuration.ExecutionMode
+import com.signalcollect.{ExecutionConfiguration, Graph, GraphBuilder}
+import stormed.{HoliRankEdge, HoliRankVertex}
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration

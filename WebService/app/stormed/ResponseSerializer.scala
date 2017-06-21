@@ -1,9 +1,9 @@
 package stormed
 
-import org.json4s._
-import org.json4s.JsonDSL._
-import org.json4s.native.Serialization.write
 import ch.usi.inf.reveal.parsing.artifact.ArtifactSerializer.formats
+import org.json4s.JsonDSL._
+import org.json4s._
+import org.json4s.native.Serialization.write
 
 object ResponseSerializer extends CustomSerializer[Response](format => (
   {

@@ -1,18 +1,7 @@
 package stormed
 
-import com.signalcollect._
-
 import ch.usi.inf.reveal.parsing.units.InformationUnit
-
-import com.signalcollect.DefaultEdge
-import com.signalcollect.configuration.ExecutionMode
-
-import ch.usi.inf.reveal.parsing.units.similarity.InformationUnitSimilarity._
-import ch.usi.inf.reveal.parsing.units.similarity.SimilarityParameters
-import akka.event.Logging
-import akka.actor.ActorSystem
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import com.signalcollect.{DefaultEdge, _}
 
 
 case class HoliRankEdge(t: InformationUnit, similarity: Double) extends DefaultEdge(t) {
