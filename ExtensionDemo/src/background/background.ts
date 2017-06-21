@@ -18,8 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
         serviceURL = "http://" + serviceURL;
     }
 
-
-
     // No matter what, we check if the user is registered to the service
     userId = localStorage.getItem("userId");
     if (userId == null) {
@@ -121,8 +119,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
                 setIcon("green");
 
-
-
                 chrome.tabs.query({active: true, currentWindow: true}, function (arrayOfTabs) {
                     // since only one tab should be active and in the current window at once
                     // the return variable should only have one entry
@@ -198,8 +194,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, info) {
     const key = "SliderValue___" + tabId;
     localStorage.removeItem(key);
 });
-
-// chrome.tabs.onHighlighted.addListener()
 
 // When the tab is closed, we remove the slider value saved
 chrome.tabs.onRemoved.addListener(function(tabId, info) {

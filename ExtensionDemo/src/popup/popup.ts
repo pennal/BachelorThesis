@@ -85,8 +85,6 @@ document.addEventListener('DOMContentLoaded', function() {
     messageContainer.hide();
 
 
-
-
     // The idea is to see whether there exists something already stored in the storage to save the status of the slider
     // In this case, it means that the user is reopening the popup, and there is no need to refetch the contents from the
     // the service. Also, we want to persist the status of the slider, to show the previously selected value.
@@ -144,7 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (response.status === "error") {
                 sliderContainer.hide();
                 messageContainer.show();
-
                 messageContainer.text("An error has occured while parsing the page")
             } else {
                 // Page is unknown
