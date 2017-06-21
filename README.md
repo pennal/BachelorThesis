@@ -2,7 +2,7 @@
 	<img src="Other/ThesisLogo.png" width="300pt"/>
 	<h1>WebDistiller</h1>
 </div>
-WebDistiller is a summarizer built on top of LIBRA, a holistic recommender developed by the [REVEAL](http://reveal.inf.usi.ch/) team @ [Università della Svizzera Italiana](http://www.inf.usi.ch/)
+WebDistiller is a summarizer built on top of LIBRA, a holistic recommender developed by the [REVEAL](http://reveal.inf.usi.ch/) team @[Università della Svizzera Italiana](http://www.inf.usi.ch/)
 
 ## Structure
 The project contains two main components: 
@@ -45,7 +45,7 @@ tsc
 ```
 Now, open Chrome and navigate to `chrome://extensions` by typing it in the address bar. On the upper right side of the page, enable `Developer mode`. Once done, click on `Load unpacked extension` and browse to the `ChromeExtension` folder, and click OK. The extension should appear on the right of the address bar. 
 
-# Using the tool
+## Using the tool
 
 Once the service is running and the extension has been installed, navigate to a resource on one of the folowing sites:
 
